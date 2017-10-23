@@ -1,0 +1,7 @@
+C:\Users\mcies\Documents\Studia\sztucznaInteligencja\Project\CustomPorcject\algorithms\bin\Debug\algorithms.exe.config
+C:\Users\mcies\Documents\Studia\sztucznaInteligencja\Project\CustomPorcject\algorithms\bin\Debug\algorithms.exe
+C:\Users\mcies\Documents\Studia\sztucznaInteligencja\Project\CustomPorcject\algorithms\bin\Debug\algorithms.pdb
+C:\Users\mcies\Documents\Studia\sztucznaInteligencja\Project\CustomPorcject\algorithms\obj\Debug\algorithms.csprojResolveAssemblyReference.cache
+C:\Users\mcies\Documents\Studia\sztucznaInteligencja\Project\CustomPorcject\algorithms\obj\Debug\algorithms.csproj.CoreCompileInputs.cache
+C:\Users\mcies\Documents\Studia\sztucznaInteligencja\Project\CustomPorcject\algorithms\obj\Debug\algorithms.exe
+C:\Users\mcies\Documents\Studia\sztucznaInteligencja\Project\CustomPorcject\algorithms\obj\Debug\algorithms.pdb
