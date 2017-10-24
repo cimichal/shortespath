@@ -5,3 +5,5 @@ C:\Users\mcies\Documents\Studia\sztucznaInteligencja\Project\CustomPorcject\algo
 C:\Users\mcies\Documents\Studia\sztucznaInteligencja\Project\CustomPorcject\algorithms\obj\Debug\algorithms.csproj.CoreCompileInputs.cache
 C:\Users\mcies\Documents\Studia\sztucznaInteligencja\Project\CustomPorcject\algorithms\obj\Debug\algorithms.exe
 C:\Users\mcies\Documents\Studia\sztucznaInteligencja\Project\CustomPorcject\algorithms\obj\Debug\algorithms.pdb
+C:\Users\mcies\Documents\Studia\sztucznaInteligencja\Project\CustomPorcject\algorithms\bin\Debug\System.ValueTuple.dll
+C:\Users\mcies\Documents\Studia\sztucznaInteligencja\Project\CustomPorcject\algorithms\bin\Debug\System.ValueTuple.xml

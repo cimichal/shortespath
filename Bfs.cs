@@ -1,29 +1,30 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace algorithms
 {
-    public class Bfs<T>
+    public class Bfs
     {
-        public Bfs(Graph<T> graf, T indexPunktuStartowego)
+        public Bfs(int indexPunktuStartowego)
         {
-            this.Graf = graf;
             this.IndexPunktuStartowego = indexPunktuStartowego;
-            this.StosWierzcholkowDoOdwiedzenia = new Queue<T>();
-            this.ListaOdwiedzonychWierzcholkow = new HashSet<T>();
+            this.StosWierzcholkowDoOdwiedzenia = new Queue<int>();
+            this.ListaOdwiedzonychWierzcholkow = new HashSet<int>();
         }
 
-        private T IndexPunktuStartowego { get; }
-        private Graph<T> Graf { get; }
-        private Queue<T> StosWierzcholkowDoOdwiedzenia { get; }
-        private HashSet<T> ListaOdwiedzonychWierzcholkow { get; }
+        private int IndexPunktuStartowego { get; }
+        public Graph<int> Graf { get; set; }
+        public Matrix Matrix { get; set; }
+        private Queue<int> StosWierzcholkowDoOdwiedzenia { get; }
+        private HashSet<int> ListaOdwiedzonychWierzcholkow { get; }
 
-        public bool ObliczBfs<T>()
+        public bool ObliczBfs()
         {
-            if (!this.ListaWierzcholkowPosiadaPunktStartowy())
-            {
-                return true;
-            }
+//            if (!this.ListaWierzcholkowPosiadaPunktStartowy())
+//            {
+//                return true;
+//            }
 
             this.DodajNowyWierzcholekDoOdwiedzenia(this.IndexPunktuStartowego);
 
@@ -38,7 +39,7 @@ namespace algorithms
 
                 this.WirzcholekZostalOdwiedzony(wierzcholekDoSprawdzenia);
 
-                foreach (var sasiedziWierzcholka in this.PobierzListeSasiednichWierzcholkow(wierzcholekDoSprawdzenia))
+                foreach (var sasiedziWierzcholka in this.PobierzListeSasiednichWierzcholkow(wierzcholekDoSprawdzenia, DataStructureType.Matrix))
                 {
                     if (!this.WierzcholeBylOdwiedzony(sasiedziWierzcholka))
                     {
@@ -50,17 +51,17 @@ namespace algorithms
             return true;
         }
 
-        public Func<T, IEnumerable<T>> ObliczNajkrotszaDroge()
+        public Func<int, IEnumerable<int>> ObliczNajkrotszaDroge()
         {
-            var poprzednieDrogi = new Dictionary<T, T>();
-            var kolejka = new Queue<T>();
+            var poprzednieDrogi = new Dictionary<int, int>();
+            var kolejka = new Queue<int>();
 
             kolejka.Enqueue(this.IndexPunktuStartowego);
 
             while (kolejka.Count > 0)
             {
                 var aktualnyWierzcholek = kolejka.Dequeue();
-                foreach (var sasiad in this.PobierzListeSasiednichWierzcholkow(aktualnyWierzcholek))
+                foreach (var sasiad in this.PobierzListeSasiednichWierzcholkow(aktualnyWierzcholek, DataStructureType.Matrix))
                 {
                     if (poprzednieDrogi.ContainsKey(sasiad))
                     {
@@ -72,9 +73,9 @@ namespace algorithms
                 }
             }
 
-            IEnumerable<T> NajkrotszaDroga(T wierzcholek)
+            IEnumerable<int> NajkrotszaDroga(int wierzcholek)
             {
-                var sciezka = new List<T>();
+                var sciezka = new List<int>();
 
                 while (!wierzcholek.Equals(this.IndexPunktuStartowego))
                 {
@@ -91,30 +92,59 @@ namespace algorithms
             return NajkrotszaDroga;
         }
 
-        private bool ListaWierzcholkowPosiadaPunktStartowy()
+        private bool ListaWierzcholkowPosiadaPunktStartowy(DataStructureType dataStructureType)
         {
-            return this.Graf.ListaPowiazanychWierzcholkow.ContainsKey(this.IndexPunktuStartowego);
+            switch (dataStructureType)
+            {
+                case DataStructureType.Matrix:
+                    return true;
+                    break;
+
+                case DataStructureType.Graf:
+                    return this.Graf.ListaPowiazanychWierzcholkow.ContainsKey(this.IndexPunktuStartowego);
+                    break;
+            }
+            return false;
         }
 
-        private IEnumerable<T> PobierzListeSasiednichWierzcholkow(T wierzcholekDoSprawdzenia)
+        private IEnumerable<int> PobierzListeSasiednichWierzcholkow(int wierzcholekDoSprawdzenia, DataStructureType dataStructureType )
         {
-            return this.Graf.ListaPowiazanychWierzcholkow[wierzcholekDoSprawdzenia];
+            var index = wierzcholekDoSprawdzenia as object;
+
+            switch (dataStructureType)
+            {
+                case DataStructureType.Matrix:
+                    return this.Matrix.AddNeighbors((int)index);
+                    break;
+
+                case DataStructureType.Graf:
+                    //return this.Graf.ListaPowiazanychWierzcholkow[wierzcholekDoSprawdzenia];
+                    break;
+            }
+
+            return null;
         }
 
-        private void DodajNowyWierzcholekDoOdwiedzenia(T wierzcholekDoOdwiedzenia)
+        private void DodajNowyWierzcholekDoOdwiedzenia(int wierzcholekDoOdwiedzenia)
         {
             this.StosWierzcholkowDoOdwiedzenia.Enqueue(wierzcholekDoOdwiedzenia);
         }
 
-        private bool WierzcholeBylOdwiedzony(T wierzcholekDoSprawdzenia)
+        private bool WierzcholeBylOdwiedzony(int wierzcholekDoSprawdzenia)
         {
             return this.ListaOdwiedzonychWierzcholkow.Contains(wierzcholekDoSprawdzenia);
         }
 
-        private void WirzcholekZostalOdwiedzony(T sprawdzonyWierzcholek)
+        private void WirzcholekZostalOdwiedzony(int sprawdzonyWierzcholek)
         {
             this.ListaOdwiedzonychWierzcholkow.Add(sprawdzonyWierzcholek);
             Console.WriteLine("Bfs : {0}", sprawdzonyWierzcholek);
         }
+    }
+
+    public enum DataStructureType
+    {
+        Graf,
+        Matrix
     }
 }
