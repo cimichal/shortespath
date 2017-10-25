@@ -7,9 +7,9 @@ namespace algorithms
     {
         private static void Main(string[] args)
         {
-            var wierzcholki = WygenerujWierzcholki(50);
-            var indexStart = 250;
-            var indexStop = 470;
+            var wierzcholki = WygenerujWierzcholki(30);
+            var indexStart = 1;
+            var indexStop = 477;
 
             var matrixBfs = new Matrix(wierzcholki);
             var matrixDfs = new Matrix(wierzcholki);

@@ -153,6 +153,34 @@ namespace algorithms
                 walkbaleNeighbors.Add(this.GetMatrixField(null, currentPoint.PosX - 1, currentPoint.PosY).Index);
             }
 
+            // ↖
+            if (this.PointIsWalkableAt(currentPoint.PosX - 1, currentPoint.PosY - 1))
+            {
+                this.AddNewNeighbors(indexPunktu, currentPoint.PosX - 1, currentPoint.PosY - 1);
+                walkbaleNeighbors.Add(this.GetMatrixField(null, currentPoint.PosX - 1, currentPoint.PosY - 1).Index);
+            }
+
+            // ↗
+            if (this.PointIsWalkableAt(currentPoint.PosX + 1, currentPoint.PosY - 1))
+            {
+                this.AddNewNeighbors(indexPunktu, currentPoint.PosX + 1, currentPoint.PosY - 1);
+                walkbaleNeighbors.Add(this.GetMatrixField(null, currentPoint.PosX + 1, currentPoint.PosY - 1).Index);
+            }
+
+            // ↘
+            if (this.PointIsWalkableAt(currentPoint.PosX + 1, currentPoint.PosY + 1))
+            {
+                this.AddNewNeighbors(indexPunktu, currentPoint.PosX + 1, currentPoint.PosY + 1);
+                walkbaleNeighbors.Add(this.GetMatrixField(null, currentPoint.PosX + 1, currentPoint.PosY + 1).Index);
+            }
+
+            // ↙
+            if (this.PointIsWalkableAt(currentPoint.PosX - 1, currentPoint.PosY + 1))
+            {
+                this.AddNewNeighbors(indexPunktu, currentPoint.PosX - 1, currentPoint.PosY + 1);
+                walkbaleNeighbors.Add(this.GetMatrixField(null, currentPoint.PosX - 1, currentPoint.PosY + 1).Index);
+            }
+
             return walkbaleNeighbors;
         }
 
