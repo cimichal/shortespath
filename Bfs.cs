@@ -96,7 +96,7 @@ namespace algorithms
         {
             this.ListaOdwiedzonychWierzcholkow.Add(sprawdzonyWierzcholek);
             this.Matrix.SelectVisitedPoint(sprawdzonyWierzcholek);
-            Console.WriteLine("Bfs : {0}", sprawdzonyWierzcholek);
+            //.WriteLine("Bfs : {0}", sprawdzonyWierzcholek);
         }
 
         #region najkrotszaDroga

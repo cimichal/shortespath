@@ -52,9 +52,11 @@ namespace algorithms
 
         public void DisplayMatrix(bool displayIndex)
         {
-            var index = 1;
             var kolumnIndex = 1;
+            
+            Console.WriteLine();
             Console.WriteLine("1 2 3 4 5 6 7 8 9 10");
+            Console.WriteLine("---------------------");
 
             for (var wiersz = 1; wiersz <= this.wierzcholki.Length; wiersz++)
             {
@@ -95,11 +97,12 @@ namespace algorithms
                             }
                         }
                     }
-                    ++index;
                 }
                 Console.WriteLine("| {0}\t", kolumnIndex);
                 ++kolumnIndex;
             }
+
+            Console.WriteLine();
         }
 
         public List<int> GetWalkableNeighbors(int indexPunktu)
@@ -155,8 +158,8 @@ namespace algorithms
 
         private bool PointIsInsideMatrix(int neighborPosX, int neighborPosY)
         {
-            return neighborPosX >= 1 && neighborPosX < this.wierzcholki.Length && neighborPosY >= 1 &&
-                   neighborPosY < this.wierzcholki.Length;
+            return neighborPosX >= 1 && neighborPosX <= this.wierzcholki.Length && neighborPosY >= 1 &&
+                   neighborPosY <= this.wierzcholki.Length;
         }
 
         public HashSet<int> GetAllNeighbors(int index)
@@ -184,7 +187,7 @@ namespace algorithms
 
             if (index != null)
             {
-                result = this.listaPowiazanWierzcholkow.Where(item => item.Index.Equals(index)).First();
+                result = this.listaPowiazanWierzcholkow.First(item => item.Index.Equals(index));
             }
 
             if (posX != null && posY != null)
