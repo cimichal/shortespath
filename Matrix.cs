@@ -6,50 +6,43 @@ namespace algorithms
 {
     public class Matrix
     {
+        private int[] wierzcholki;
+        private List<MatrixField> listaPowiazanWierzcholkow;
+
         public Matrix(int[] wierzcholki)
         {
-            this.Wierzcholki = wierzcholki;
-            this.ListaPowiazan = new List<(int, int, int, HashSet<int>, FieldState)>();
-            this.TablicaPowiazan = new int[wierzcholki.Length,wierzcholki.Length];
+            this.wierzcholki = wierzcholki;
+            this.listaPowiazanWierzcholkow = new List<MatrixField>();
         }
-
-        private int[] Wierzcholki { get; set; }
-        private List<(int index, int pozX, int pozY, HashSet<int> sasiedzi, FieldState Stan)> ListaPowiazan  { get; set; }
-        private int[,] TablicaPowiazan { get; set; }
 
         public void GenerateEmptyMatrix()
         {
             var index = 1;
-            for (var wiersz = 1; wiersz <= this.Wierzcholki.Length; wiersz++)
+            for (var wiersz = 1; wiersz <= this.wierzcholki.Length; wiersz++)
             {
-                for (var kolumna = 1; kolumna <= this.Wierzcholki.Length; kolumna++)
+                for (var kolumna = 1; kolumna <= this.wierzcholki.Length; kolumna++)
                 {
-                    this.ListaPowiazan.Add(new ValueTuple<int, int, int, HashSet<int>, FieldState>
+                    this.listaPowiazanWierzcholkow.Add(new MatrixField()
                     {
-                        Item1 = index,
-                        Item2 = wiersz, 
-                        Item3 = kolumna,
-                        Item4 = new HashSet<int>(),
-                        Item5 = FieldState.Nieodwiedzony
+                        Index = index,
+                        Neighbors = new HashSet<int>(),
+                        PosX = wiersz,
+                        PosY = kolumna
                     });
                     index++;
                 }
             }
         }
 
-        public void AddEdge(List<Tuple<int,int>> listaPolaczen)
+        public void AddEdge(List<Tuple<int, int>> listaPolaczen)
         {
             foreach (var tuple in listaPolaczen)
             {
-                var wierzcholek = this.ListaPowiazan.FirstOrDefault(item => item.pozX.Equals(tuple.Item1) && item.pozY.Equals(tuple.Item2));
-                this.ListaPowiazan[wierzcholek.index] = new ValueTuple<int, int, int, HashSet<int>, FieldState>
-                {
-                    Item1 = wierzcholek.index,
-                    Item2 = wierzcholek.pozX,
-                    Item3 = wierzcholek.pozY,
-                    Item4 = wierzcholek.sasiedzi,
-                    Item5 = FieldState.Odwiedzony
-                };
+                var point = this.GetMatrixField(tuple.Item1, null, null);
+                point.Neighbors.Add(tuple.Item2);
+
+                var pointItem2 = this.GetMatrixField(tuple.Item2, null, null);
+                pointItem2.Neighbors.Add(tuple.Item1);
             }
         }
 
@@ -59,18 +52,17 @@ namespace algorithms
             var kolumnIndex = 1;
             Console.WriteLine("1 2 3 4 5 6 7 8 9 10");
 
-            for (var wiersz = 1; wiersz <= this.Wierzcholki.Length; wiersz++)
+            for (var wiersz = 1; wiersz <= this.wierzcholki.Length; wiersz++)
             {
-                for (var kolumna = 1; kolumna <= this.Wierzcholki.Length; kolumna++)
+                for (var kolumna = 1; kolumna <= this.wierzcholki.Length; kolumna++)
                 {
-                    var aktulanyWierzcholek =
-                        this.ListaPowiazan.FirstOrDefault(item => item.pozX.Equals(wiersz) && item.pozY.Equals(kolumna));
+                    var currentPoint = this.GetMatrixField(null, wiersz, kolumna);
 
-                    if (aktulanyWierzcholek.Stan.Equals(FieldState.Nieodwiedzony))
+                    if (currentPoint.State.Equals(FieldState.Nieodwiedzony))
                     {
                         Console.Write("0 ");
                     }
-                    else if (aktulanyWierzcholek.Stan.Equals(FieldState.Odwiedzony))
+                    else if (currentPoint.State.Equals(FieldState.Odwiedzony))
                     {
                         Console.Write("1 ");
                     }
@@ -82,54 +74,43 @@ namespace algorithms
             }
         }
 
-        public IEnumerable<int> AddNeighbors(int indexPunktu)
+        public void AddNeighbors(int indexPunktu)
         {
-            var s0 = false;
-            var s1 = false;
-            var s2 = false;
-            var s3 = false;
-
-            var currentPoint = this.ListaPowiazan.FirstOrDefault(p => p.index.Equals(indexPunktu));
+            var currentPoint = this.GetMatrixField(indexPunktu, null, null);
 
             // Up
-            if (this.PointIsWalkableAt(currentPoint.pozX, currentPoint.pozY - 1))
+            if (this.PointIsWalkableAt(currentPoint.PosX, currentPoint.PosY - 1))
             {
-                this.AddNewNeighbors(indexPunktu, currentPoint.pozX, currentPoint.pozY - 1);
-                s0 = true;
-            }
-            
-            // Down
-            if (this.PointIsWalkableAt(currentPoint.pozX, currentPoint.pozY + 1))
-            {
-                this.AddNewNeighbors(indexPunktu, currentPoint.pozX, currentPoint.pozY + 1);
-                s1 = true;
-            }
-            
-            // Right
-            if (this.PointIsWalkableAt(currentPoint.pozX + 1, currentPoint.pozY))
-            {
-                this.AddNewNeighbors(indexPunktu, currentPoint.pozX + 1, currentPoint.pozY);
-                s2 = true;
-            }
-            
-            // Left
-            if (this.PointIsWalkableAt(currentPoint.pozX - 1, currentPoint.pozY))
-            {
-                this.AddNewNeighbors(indexPunktu, currentPoint.pozX - 1, currentPoint.pozY - 1);
-                s3 = true;
+                this.AddNewNeighbors(indexPunktu, currentPoint.PosX, currentPoint.PosY - 1);
             }
 
-            return this.ListaPowiazan.FirstOrDefault(p => p.index.Equals(indexPunktu)).sasiedzi.ToList();
+            // Down
+            if (this.PointIsWalkableAt(currentPoint.PosX, currentPoint.PosY + 1))
+            {
+                this.AddNewNeighbors(indexPunktu, currentPoint.PosX, currentPoint.PosY + 1);
+            }
+
+            // Right
+            if (this.PointIsWalkableAt(currentPoint.PosX + 1, currentPoint.PosY))
+            {
+                this.AddNewNeighbors(indexPunktu, currentPoint.PosX + 1, currentPoint.PosY);
+            }
+
+            // Left
+            if (this.PointIsWalkableAt(currentPoint.PosX - 1, currentPoint.PosY))
+            {
+                this.AddNewNeighbors(indexPunktu, currentPoint.PosX - 1, currentPoint.PosY - 1);
+            }
+            
         }
 
         private bool PointIsWalkableAt(int neighborPosX, int neighborPosY)
         {
             if (this.PointIsInsideMatrix(neighborPosX, neighborPosY))
             {
-                var point = this.ListaPowiazan.First(p =>
-                    p.pozX.Equals(neighborPosX) && p.pozY.Equals(neighborPosY));
+                var point = this.GetMatrixField(null, neighborPosX, neighborPosY);
 
-                if (point.Stan != FieldState.Zablokowany)
+                if (point.State != FieldState.Zablokowany)
                 {
                     return true;
                 }
@@ -140,48 +121,53 @@ namespace algorithms
 
         private bool PointIsInsideMatrix(int neighborPosX, int neighborPosY)
         {
-            return (neighborPosX >= 1 && neighborPosX < this.Wierzcholki.Length) &&
-                (neighborPosY >= 1 && neighborPosY < this.Wierzcholki.Length);
+            return (neighborPosX >= 1 && neighborPosX < this.wierzcholki.Length) &&
+                (neighborPosY >= 1 && neighborPosY < this.wierzcholki.Length);
+        }
+
+        public HashSet<int> GetAllNeighbors(int index)
+        {
+            var matrixField = this.GetMatrixField(index, null, null);
+
+            if (matrixField.Neighbors != null)
+            {
+                return matrixField.Neighbors;
+            }
+
+            return null;
         }
 
         private void AddNewNeighbors(int indexPunktu, int neighborPosX, int neighborPosY)
         {
-            var currentPoint = this.ListaPowiazan.FirstOrDefault(p => p.index.Equals(indexPunktu));
-            var neighborPoint =
-                this.ListaPowiazan.FirstOrDefault(p => p.pozX.Equals(neighborPosX) && p.pozY.Equals(neighborPosY));
+            var currentPoint = this.GetMatrixField(indexPunktu, null, null);
 
-            var neighborsList = currentPoint.sasiedzi;
-            neighborsList.Add(neighborPoint.index);
+            var neighborPoint = this.GetMatrixField(null, neighborPosX, neighborPosY);
 
-            this.UpdateAdjanceList(indexPunktu, new ValueTuple<int, int, int, HashSet<int>, FieldState>()
+            if (neighborPoint != null)
             {
-                Item1 = indexPunktu,
-                Item2 = currentPoint.pozX,
-                Item3 = currentPoint.pozY,
-                Item4 = neighborsList,
-                Item5 = FieldState.Nieodwiedzony
-            });
+                currentPoint.Neighbors.Add(neighborPoint.Index);
+            }
         }
 
-        private void UpdateAdjanceList(int index, (int, int, int, HashSet<int>, FieldState) newTuple)
+        private MatrixField GetMatrixField(int? index, int? posX, int? posY)
         {
-            this.ListaPowiazan[index] = newTuple;
+            var result = new MatrixField();
+            
+            if(index != null)
+            {
+                result = this.listaPowiazanWierzcholkow.Where(item => item.Index.Equals(index)).First();
+            }
+
+            if(posX != null && posY != null)
+            {
+                result = this.listaPowiazanWierzcholkow
+                    .Where(item => (item.PosX.Equals(posX) && item.PosY.Equals(posY)))
+                    .First();
+            }
+            
+            return result;
         }
 
-    }
-
-    public class MatrixFiled<T>
-    {
-        public FieldState State { get; set; }
-        public int IndexPoziom { get; set; }
-        public int IndexPion { get; set; }
-        public IEnumerable<T> ListaSasiadow { get; set; }
-    }
-
-    public enum FieldState
-    {
-        Nieodwiedzony,
-        Odwiedzony,
-        Zablokowany
     }
 }
+

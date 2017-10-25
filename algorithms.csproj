@@ -47,8 +47,10 @@
   <ItemGroup>
     <Compile Include="Bfs.cs" />
     <Compile Include="Dfs.cs" />
+    <Compile Include="FieldState.cs" />
     <Compile Include="Graph.cs" />
     <Compile Include="Matrix.cs" />
+    <Compile Include="MatrixField.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

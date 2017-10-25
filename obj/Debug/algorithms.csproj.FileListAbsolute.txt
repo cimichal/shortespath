@@ -7,3 +7,11 @@ C:\Users\mcies\Documents\Studia\sztucznaInteligencja\Project\CustomPorcject\algo
 C:\Users\mcies\Documents\Studia\sztucznaInteligencja\Project\CustomPorcject\algorithms\obj\Debug\algorithms.pdb
 C:\Users\mcies\Documents\Studia\sztucznaInteligencja\Project\CustomPorcject\algorithms\bin\Debug\System.ValueTuple.dll
 C:\Users\mcies\Documents\Studia\sztucznaInteligencja\Project\CustomPorcject\algorithms\bin\Debug\System.ValueTuple.xml
+C:\Users\Michal\Desktop\metoduSztuczenejInteligencji\pathFinding\bin\Debug\algorithms.exe.config
+C:\Users\Michal\Desktop\metoduSztuczenejInteligencji\pathFinding\obj\Debug\algorithms.exe
+C:\Users\Michal\Desktop\metoduSztuczenejInteligencji\pathFinding\obj\Debug\algorithms.pdb
+C:\Users\Michal\Desktop\metoduSztuczenejInteligencji\pathFinding\obj\Debug\algorithms.csprojResolveAssemblyReference.cache
+C:\Users\Michal\Desktop\metoduSztuczenejInteligencji\pathFinding\bin\Debug\algorithms.exe
+C:\Users\Michal\Desktop\metoduSztuczenejInteligencji\pathFinding\bin\Debug\algorithms.pdb
+C:\Users\Michal\Desktop\metoduSztuczenejInteligencji\pathFinding\bin\Debug\System.ValueTuple.dll
+C:\Users\Michal\Desktop\metoduSztuczenejInteligencji\pathFinding\bin\Debug\System.ValueTuple.xml

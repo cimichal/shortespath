@@ -21,10 +21,10 @@ namespace algorithms
 
         public bool ObliczBfs()
         {
-//            if (!this.ListaWierzcholkowPosiadaPunktStartowy())
-//            {
-//                return true;
-//            }
+            //if (!this.ListaWierzcholkowPosiadaPunktStartowy())
+            //{
+            //    return true;
+            //}
 
             this.DodajNowyWierzcholekDoOdwiedzenia(this.IndexPunktuStartowego);
 
@@ -51,46 +51,46 @@ namespace algorithms
             return true;
         }
 
-        public Func<int, IEnumerable<int>> ObliczNajkrotszaDroge()
-        {
-            var poprzednieDrogi = new Dictionary<int, int>();
-            var kolejka = new Queue<int>();
+        //public Func<int, IEnumerable<int>> ObliczNajkrotszaDroge()
+        //{
+        //    var poprzednieDrogi = new Dictionary<int, int>();
+        //    var kolejka = new Queue<int>();
 
-            kolejka.Enqueue(this.IndexPunktuStartowego);
+        //    kolejka.Enqueue(this.IndexPunktuStartowego);
 
-            while (kolejka.Count > 0)
-            {
-                var aktualnyWierzcholek = kolejka.Dequeue();
-                foreach (var sasiad in this.PobierzListeSasiednichWierzcholkow(aktualnyWierzcholek, DataStructureType.Matrix))
-                {
-                    if (poprzednieDrogi.ContainsKey(sasiad))
-                    {
-                        continue;
-                    }
+        //    while (kolejka.Count > 0)
+        //    {
+        //        var aktualnyWierzcholek = kolejka.Dequeue();
+        //        foreach (var sasiad in this.PobierzListeSasiednichWierzcholkow(aktualnyWierzcholek, DataStructureType.Matrix))
+        //        {
+        //            if (poprzednieDrogi.ContainsKey(sasiad))
+        //            {
+        //                continue;
+        //            }
 
-                    poprzednieDrogi[sasiad] = aktualnyWierzcholek;
-                    kolejka.Enqueue(sasiad);
-                }
-            }
+        //            poprzednieDrogi[sasiad] = aktualnyWierzcholek;
+        //            kolejka.Enqueue(sasiad);
+        //        }
+        //    }
 
-            IEnumerable<int> NajkrotszaDroga(int wierzcholek)
-            {
-                var sciezka = new List<int>();
+        //    IEnumerable<int> NajkrotszaDroga(int wierzcholek)
+        //    {
+        //        var sciezka = new List<int>();
 
-                while (!wierzcholek.Equals(this.IndexPunktuStartowego))
-                {
-                    sciezka.Add(wierzcholek);
-                    wierzcholek = poprzednieDrogi[wierzcholek];
-                }
+        //        while (!wierzcholek.Equals(this.IndexPunktuStartowego))
+        //        {
+        //            sciezka.Add(wierzcholek);
+        //            wierzcholek = poprzednieDrogi[wierzcholek];
+        //        }
 
-                sciezka.Add(this.IndexPunktuStartowego);
-                sciezka.Reverse();
+        //        sciezka.Add(this.IndexPunktuStartowego);
+        //        sciezka.Reverse();
 
-                return sciezka;
-            }
+        //        return sciezka;
+        //    }
 
-            return NajkrotszaDroga;
-        }
+        //    return NajkrotszaDroga;
+        //}
 
         private bool ListaWierzcholkowPosiadaPunktStartowy(DataStructureType dataStructureType)
         {
@@ -109,12 +109,13 @@ namespace algorithms
 
         private IEnumerable<int> PobierzListeSasiednichWierzcholkow(int wierzcholekDoSprawdzenia, DataStructureType dataStructureType )
         {
-            var index = wierzcholekDoSprawdzenia as object;
+            var index = wierzcholekDoSprawdzenia;
 
             switch (dataStructureType)
             {
                 case DataStructureType.Matrix:
-                    return this.Matrix.AddNeighbors((int)index);
+                    this.Matrix.AddNeighbors(index);
+                    var result = this.Matrix.GetAllNeighbors(index);
                     break;
 
                 case DataStructureType.Graf:
