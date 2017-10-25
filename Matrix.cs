@@ -15,6 +15,9 @@ namespace algorithms
             this.listaPowiazanWierzcholkow = new List<MatrixField>();
         }
 
+        public int IndexPunktuStartowego { get; set; }
+        public int IndexPunktuKoncowego { get; set; }
+
         public void GenerateEmptyMatrix()
         {
             var index = 1;
@@ -53,7 +56,7 @@ namespace algorithms
         public void DisplayMatrix(bool displayIndex)
         {
             var kolumnIndex = 1;
-            
+
             Console.WriteLine();
             Console.WriteLine("1 2 3 4 5 6 7 8 9 10");
             Console.WriteLine("---------------------");
@@ -70,32 +73,44 @@ namespace algorithms
                     }
                     else
                     {
-                        if (currentPoint.Walkable == FieldState.Zablokowany)
+                        if (currentPoint.Index.Equals(this.IndexPunktuKoncowego))
                         {
-                            switch (currentPoint.Walkable)
-                            {
-                                case FieldState.Zablokowany:
-                                    Console.Write("- ");
-                                    break;
-                                case FieldState.Odblokowany:
-                                    Console.Write("* ");
-                                    break;
-                            }
+                            Console.Write("E ");
+                        }
+                        else if (currentPoint.Index.Equals(this.IndexPunktuStartowego))
+                        {
+                            Console.Write("S ");
                         }
                         else
                         {
-                            switch (currentPoint.State)
+                            if (currentPoint.Walkable == FieldState.Zablokowany)
                             {
-                                case FieldState.Nieodwiedzony:
-                                    Console.Write("0 ");
-                                    break;
-                                case FieldState.Odwiedzony:
-                                    Console.Write("1 ");
-                                    break;
-                                default:
-                                    throw new ArgumentOutOfRangeException();
+                                switch (currentPoint.Walkable)
+                                {
+                                    case FieldState.Zablokowany:
+                                        Console.Write("- ");
+                                        break;
+                                    case FieldState.Odblokowany:
+                                        Console.Write("* ");
+                                        break;
+                                }
+                            }
+                            else
+                            {
+                                switch (currentPoint.State)
+                                {
+                                    case FieldState.Nieodwiedzony:
+                                        Console.Write("0 ");
+                                        break;
+                                    case FieldState.Odwiedzony:
+                                        Console.Write("1 ");
+                                        break;
+                                    default:
+                                        throw new ArgumentOutOfRangeException();
+                                }
                             }
                         }
+                        
                     }
                 }
                 Console.WriteLine("| {0}\t", kolumnIndex);

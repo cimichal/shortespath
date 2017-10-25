@@ -8,32 +8,21 @@ namespace algorithms
         private static void Main(string[] args)
         {
             var wierzcholki = WygenerujWierzcholki(50);
+            var indexStart = 250;
+            var indexStop = 470;
 
-            var matrix = new Matrix(wierzcholki);
+            var matrixBfs = new Matrix(wierzcholki);
+            var matrixDfs = new Matrix(wierzcholki);
 
-            matrix.GenerateEmptyMatrix();
+            matrixDfs.IndexPunktuKoncowego = indexStop;
+            matrixDfs.IndexPunktuStartowego = indexStart;
 
-            //matrix.DisplayMatrix(true);
+            matrixBfs.IndexPunktuKoncowego = indexStop;
+            matrixBfs.IndexPunktuStartowego = indexStart;
 
-            matrix.AddEdge(new List<Tuple<int, int>>()
-            {
-                //Tuple.Create(1,1)
-                //Tuple.Create(2,33),
-                //Tuple.Create(8,66),
-                //Tuple.Create(50,3),
-                //Tuple.Create(2,8),
-                //Tuple.Create(6,50),
-                //Tuple.Create(5,5),
-                //Tuple.Create(69,1),
-                //Tuple.Create(3,1),
-                //Tuple.Create(3,20),
-                //Tuple.Create(3,33),
-                //Tuple.Create(67,1),
-                //Tuple.Create(23,3),
-                //Tuple.Create(3,45),
-                //Tuple.Create(10,8)
-            });
-
+            matrixBfs.GenerateEmptyMatrix();
+            matrixDfs.GenerateEmptyMatrix();
+            
             var obstacle = new List<int>()
             {
                 33, 34, 35, 36, 46, 56, 55, 54, 53, 43
@@ -41,15 +30,23 @@ namespace algorithms
 
             Console.WriteLine();
             
-            Bfs bfsMatrix = new Bfs(1)
+            var bfsMatrix = new Bfs(indexStart, indexStop)
             {
-                Matrix = matrix
+                Matrix = matrixBfs
             };
 
-            matrix.AddObstacle(obstacle);
+            var dfs = new Dfs(indexStart, indexStop)
+            {
+                Matrix = matrixDfs
+            };
+
+            matrixBfs.AddObstacle(obstacle);
 
             bfsMatrix.ObliczBfs();
-            matrix.DisplayMatrix(false);
+            dfs.ObliczDfs();
+
+            matrixBfs.DisplayMatrix(false);
+            matrixDfs.DisplayMatrix(false);
             
             Console.ReadLine();
         }

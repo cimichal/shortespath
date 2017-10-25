@@ -3,24 +3,25 @@ using System.Collections.Generic;
 
 namespace algorithms
 {
-    public class Dfs<T>
+    public class Dfs
     {
-        public Dfs(Graph<T> graf, T indexPunktuStartowego)
+        public Dfs(int indexPunktuStartowego, int indexPunktuKoncowego)
         {
-            this.Graf = graf;
             this.IndexPunktuStartowego = indexPunktuStartowego;
-            this.StosWierzcholkowDoOdwiedzenia = new Stack<T>();
-            this.ListaOdwiedzonychWierzcholkow = new HashSet<T>();
+            this.IndexPunktuKoncowego = indexPunktuKoncowego;
+            this.StosWierzcholkowDoOdwiedzenia = new Stack<int>();
+            this.ListaOdwiedzonychWierzcholkow = new HashSet<int>();
         }
 
-        private T IndexPunktuStartowego { get; }
-        private Graph<T> Graf { get; }
-        private Stack<T> StosWierzcholkowDoOdwiedzenia { get; }
+        private int IndexPunktuStartowego { get; }
+        private int IndexPunktuKoncowego { get; }
+        public Matrix Matrix { get; set; }
+        private Stack<int> StosWierzcholkowDoOdwiedzenia { get; }
+        private HashSet<int> ListaOdwiedzonychWierzcholkow { get; }
+        private bool OdwiedzonoOstatniWierzcholek { get; set; } = false;
 
-        // kazdy wierzcholek moze zostac odwiedzony wylacznie raz, dlatego hashset
-        private HashSet<T> ListaOdwiedzonychWierzcholkow { get; }
 
-        public bool ObliczDfs<T>()
+        public bool ObliczDfs()
         {
             if (!this.ListaWierzcholkowPosiadaPunktStartowy())
             {
@@ -29,7 +30,7 @@ namespace algorithms
 
             this.DodajNowyWierzcholekDoOdwiedzenia(this.IndexPunktuStartowego);
 
-            while (this.StosWierzcholkowDoOdwiedzenia.Count > 0)
+            while (this.StosWierzcholkowDoOdwiedzenia.Count > 0 && !this.OdwiedzonoOstatniWierzcholek)
             {
                 var wierzcholekDoSprawdzenia = this.StosWierzcholkowDoOdwiedzenia.Pop();
 
@@ -39,6 +40,11 @@ namespace algorithms
                 }
 
                 this.WirzcholekZostalOdwiedzony(wierzcholekDoSprawdzenia);
+
+                if (wierzcholekDoSprawdzenia.Equals(this.IndexPunktuKoncowego))
+                {
+                    this.OdwiedzonoOstatniWierzcholek = true;
+                }
 
                 foreach (var sasiedziWierzcholka in this.PobierzListeSasiednichWierzcholkow(wierzcholekDoSprawdzenia))
                 {
@@ -54,28 +60,29 @@ namespace algorithms
 
         private bool ListaWierzcholkowPosiadaPunktStartowy()
         {
-            return this.Graf.ListaPowiazanychWierzcholkow.ContainsKey(this.IndexPunktuStartowego);
+            return this.Matrix.IsItemAsMatrixPoint(this.IndexPunktuStartowego);
         }
 
-        private IEnumerable<T> PobierzListeSasiednichWierzcholkow(T wierzcholekDoSprawdzenia)
+        private List<int> PobierzListeSasiednichWierzcholkow(int wierzcholekDoSprawdzenia)
         {
-            return this.Graf.ListaPowiazanychWierzcholkow[wierzcholekDoSprawdzenia];
+            return this.Matrix.GetWalkableNeighbors(wierzcholekDoSprawdzenia);
         }
 
-        private void DodajNowyWierzcholekDoOdwiedzenia(T wierzcholekDoOdwiedzenia)
+        private void DodajNowyWierzcholekDoOdwiedzenia(int wierzcholekDoOdwiedzenia)
         {
             this.StosWierzcholkowDoOdwiedzenia.Push(wierzcholekDoOdwiedzenia);
         }
 
-        private bool WierzcholeBylOdwiedzony(T wierzcholekDoSprawdzenia)
+        private bool WierzcholeBylOdwiedzony(int wierzcholekDoSprawdzenia)
         {
             return this.ListaOdwiedzonychWierzcholkow.Contains(wierzcholekDoSprawdzenia);
         }
 
-        private void WirzcholekZostalOdwiedzony(T sprawdzonyWierzcholek)
+        private void WirzcholekZostalOdwiedzony(int sprawdzonyWierzcholek)
         {
             this.ListaOdwiedzonychWierzcholkow.Add(sprawdzonyWierzcholek);
-            Console.WriteLine("Dfs : {0}", sprawdzonyWierzcholek);
+            this.Matrix.SelectVisitedPoint(sprawdzonyWierzcholek);
+            //Console.WriteLine("Dfs : {0}", sprawdzonyWierzcholek);
         }
     }
 }
