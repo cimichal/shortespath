@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace algorithms
@@ -14,17 +13,16 @@ namespace algorithms
         }
 
         private int IndexPunktuStartowego { get; }
-        public Graph<int> Graf { get; set; }
         public Matrix Matrix { get; set; }
         private Queue<int> StosWierzcholkowDoOdwiedzenia { get; }
         private HashSet<int> ListaOdwiedzonychWierzcholkow { get; }
 
         public bool ObliczBfs()
         {
-            //if (!this.ListaWierzcholkowPosiadaPunktStartowy())
-            //{
-            //    return true;
-            //}
+            if (!this.ListaWierzcholkowPosiadaPunktStartowy(DataStructureType.Matrix))
+            {
+                return true;
+            }
 
             this.DodajNowyWierzcholekDoOdwiedzenia(this.IndexPunktuStartowego);
 
@@ -39,7 +37,8 @@ namespace algorithms
 
                 this.WirzcholekZostalOdwiedzony(wierzcholekDoSprawdzenia);
 
-                foreach (var sasiedziWierzcholka in this.PobierzListeSasiednichWierzcholkow(wierzcholekDoSprawdzenia, DataStructureType.Matrix))
+                foreach (var sasiedziWierzcholka in this.PobierzListeSasiednichWierzcholkow(wierzcholekDoSprawdzenia,
+                    DataStructureType.Matrix))
                 {
                     if (!this.WierzcholeBylOdwiedzony(sasiedziWierzcholka))
                     {
@@ -50,6 +49,57 @@ namespace algorithms
 
             return true;
         }
+
+        private bool ListaWierzcholkowPosiadaPunktStartowy(DataStructureType dataStructureType)
+        {
+            switch (dataStructureType)
+            {
+                case DataStructureType.Matrix:
+                    return this.Matrix.IsItemAsMatrixPoint(this.IndexPunktuStartowego);
+                    break;
+            }
+            return false;
+        }
+
+        private List<int> PobierzListeSasiednichWierzcholkow(int wierzcholekDoSprawdzenia,
+            DataStructureType dataStructureType)
+        {
+            var index = wierzcholekDoSprawdzenia;
+
+            switch (dataStructureType)
+            {
+                case DataStructureType.Matrix:
+                    var result = this.Matrix.GetWalkableNeighbors(index);
+                    return result;
+
+                case DataStructureType.Graf:
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(dataStructureType), dataStructureType, null);
+            }
+
+            return null;
+        }
+
+        private void DodajNowyWierzcholekDoOdwiedzenia(int wierzcholekDoOdwiedzenia)
+        {
+            this.StosWierzcholkowDoOdwiedzenia.Enqueue(wierzcholekDoOdwiedzenia);
+        }
+
+        private bool WierzcholeBylOdwiedzony(int wierzcholekDoSprawdzenia)
+        {
+            return this.ListaOdwiedzonychWierzcholkow.Contains(wierzcholekDoSprawdzenia);
+        }
+
+        private void WirzcholekZostalOdwiedzony(int sprawdzonyWierzcholek)
+        {
+            this.ListaOdwiedzonychWierzcholkow.Add(sprawdzonyWierzcholek);
+            this.Matrix.SelectVisitedPoint(sprawdzonyWierzcholek);
+            Console.WriteLine("Bfs : {0}", sprawdzonyWierzcholek);
+        }
+
+        #region najkrotszaDroga
 
         //public Func<int, IEnumerable<int>> ObliczNajkrotszaDroge()
         //{
@@ -92,55 +142,7 @@ namespace algorithms
         //    return NajkrotszaDroga;
         //}
 
-        private bool ListaWierzcholkowPosiadaPunktStartowy(DataStructureType dataStructureType)
-        {
-            switch (dataStructureType)
-            {
-                case DataStructureType.Matrix:
-                    return true;
-                    break;
-
-                case DataStructureType.Graf:
-                    return this.Graf.ListaPowiazanychWierzcholkow.ContainsKey(this.IndexPunktuStartowego);
-                    break;
-            }
-            return false;
-        }
-
-        private IEnumerable<int> PobierzListeSasiednichWierzcholkow(int wierzcholekDoSprawdzenia, DataStructureType dataStructureType )
-        {
-            var index = wierzcholekDoSprawdzenia;
-
-            switch (dataStructureType)
-            {
-                case DataStructureType.Matrix:
-                    this.Matrix.AddNeighbors(index);
-                    var result = this.Matrix.GetAllNeighbors(index);
-                    break;
-
-                case DataStructureType.Graf:
-                    //return this.Graf.ListaPowiazanychWierzcholkow[wierzcholekDoSprawdzenia];
-                    break;
-            }
-
-            return null;
-        }
-
-        private void DodajNowyWierzcholekDoOdwiedzenia(int wierzcholekDoOdwiedzenia)
-        {
-            this.StosWierzcholkowDoOdwiedzenia.Enqueue(wierzcholekDoOdwiedzenia);
-        }
-
-        private bool WierzcholeBylOdwiedzony(int wierzcholekDoSprawdzenia)
-        {
-            return this.ListaOdwiedzonychWierzcholkow.Contains(wierzcholekDoSprawdzenia);
-        }
-
-        private void WirzcholekZostalOdwiedzony(int sprawdzonyWierzcholek)
-        {
-            this.ListaOdwiedzonychWierzcholkow.Add(sprawdzonyWierzcholek);
-            Console.WriteLine("Bfs : {0}", sprawdzonyWierzcholek);
-        }
+        #endregion
     }
 
     public enum DataStructureType

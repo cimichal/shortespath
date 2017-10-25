@@ -6,8 +6,8 @@ namespace algorithms
 {
     public class Matrix
     {
-        private int[] wierzcholki;
-        private List<MatrixField> listaPowiazanWierzcholkow;
+        private readonly List<MatrixField> listaPowiazanWierzcholkow;
+        private readonly int[] wierzcholki;
 
         public Matrix(int[] wierzcholki)
         {
@@ -22,12 +22,14 @@ namespace algorithms
             {
                 for (var kolumna = 1; kolumna <= this.wierzcholki.Length; kolumna++)
                 {
-                    this.listaPowiazanWierzcholkow.Add(new MatrixField()
+                    this.listaPowiazanWierzcholkow.Add(new MatrixField
                     {
                         Index = index,
                         Neighbors = new HashSet<int>(),
                         PosX = wiersz,
-                        PosY = kolumna
+                        PosY = kolumna,
+                        State = FieldState.Nieodwiedzony,
+                        Walkable = FieldState.Odblokowany
                     });
                     index++;
                 }
@@ -40,13 +42,15 @@ namespace algorithms
             {
                 var point = this.GetMatrixField(tuple.Item1, null, null);
                 point.Neighbors.Add(tuple.Item2);
+                point.Walkable = FieldState.Odblokowany;
 
                 var pointItem2 = this.GetMatrixField(tuple.Item2, null, null);
                 pointItem2.Neighbors.Add(tuple.Item1);
+                pointItem2.Walkable = FieldState.Odblokowany;
             }
         }
 
-        public void DisplayMatrix()
+        public void DisplayMatrix(bool displayIndex)
         {
             var index = 1;
             var kolumnIndex = 1;
@@ -58,15 +62,39 @@ namespace algorithms
                 {
                     var currentPoint = this.GetMatrixField(null, wiersz, kolumna);
 
-                    if (currentPoint.State.Equals(FieldState.Nieodwiedzony))
+                    if (displayIndex)
                     {
-                        Console.Write("0 ");
+                        Console.Write("{0} ", currentPoint.Index);
                     }
-                    else if (currentPoint.State.Equals(FieldState.Odwiedzony))
+                    else
                     {
-                        Console.Write("1 ");
+                        if (currentPoint.Walkable == FieldState.Zablokowany)
+                        {
+                            switch (currentPoint.Walkable)
+                            {
+                                case FieldState.Zablokowany:
+                                    Console.Write("- ");
+                                    break;
+                                case FieldState.Odblokowany:
+                                    Console.Write("* ");
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            switch (currentPoint.State)
+                            {
+                                case FieldState.Nieodwiedzony:
+                                    Console.Write("0 ");
+                                    break;
+                                case FieldState.Odwiedzony:
+                                    Console.Write("1 ");
+                                    break;
+                                default:
+                                    throw new ArgumentOutOfRangeException();
+                            }
+                        }
                     }
-
                     ++index;
                 }
                 Console.WriteLine("| {0}\t", kolumnIndex);
@@ -74,34 +102,40 @@ namespace algorithms
             }
         }
 
-        public void AddNeighbors(int indexPunktu)
+        public List<int> GetWalkableNeighbors(int indexPunktu)
         {
             var currentPoint = this.GetMatrixField(indexPunktu, null, null);
+            var walkbaleNeighbors = new List<int>();
 
             // Up
             if (this.PointIsWalkableAt(currentPoint.PosX, currentPoint.PosY - 1))
             {
                 this.AddNewNeighbors(indexPunktu, currentPoint.PosX, currentPoint.PosY - 1);
+                walkbaleNeighbors.Add(this.GetMatrixField(null, currentPoint.PosX, currentPoint.PosY - 1).Index);
             }
 
             // Down
             if (this.PointIsWalkableAt(currentPoint.PosX, currentPoint.PosY + 1))
             {
                 this.AddNewNeighbors(indexPunktu, currentPoint.PosX, currentPoint.PosY + 1);
+                walkbaleNeighbors.Add(this.GetMatrixField(null, currentPoint.PosX, currentPoint.PosY + 1).Index);
             }
 
             // Right
             if (this.PointIsWalkableAt(currentPoint.PosX + 1, currentPoint.PosY))
             {
                 this.AddNewNeighbors(indexPunktu, currentPoint.PosX + 1, currentPoint.PosY);
+                walkbaleNeighbors.Add(this.GetMatrixField(null, currentPoint.PosX + 1, currentPoint.PosY).Index);
             }
 
             // Left
             if (this.PointIsWalkableAt(currentPoint.PosX - 1, currentPoint.PosY))
             {
                 this.AddNewNeighbors(indexPunktu, currentPoint.PosX - 1, currentPoint.PosY - 1);
+                walkbaleNeighbors.Add(this.GetMatrixField(null, currentPoint.PosX - 1, currentPoint.PosY).Index);
             }
-            
+
+            return walkbaleNeighbors;
         }
 
         private bool PointIsWalkableAt(int neighborPosX, int neighborPosY)
@@ -121,20 +155,15 @@ namespace algorithms
 
         private bool PointIsInsideMatrix(int neighborPosX, int neighborPosY)
         {
-            return (neighborPosX >= 1 && neighborPosX < this.wierzcholki.Length) &&
-                (neighborPosY >= 1 && neighborPosY < this.wierzcholki.Length);
+            return neighborPosX >= 1 && neighborPosX < this.wierzcholki.Length && neighborPosY >= 1 &&
+                   neighborPosY < this.wierzcholki.Length;
         }
 
         public HashSet<int> GetAllNeighbors(int index)
         {
             var matrixField = this.GetMatrixField(index, null, null);
 
-            if (matrixField.Neighbors != null)
-            {
-                return matrixField.Neighbors;
-            }
-
-            return null;
+            return matrixField.Neighbors;
         }
 
         private void AddNewNeighbors(int indexPunktu, int neighborPosX, int neighborPosY)
@@ -152,22 +181,45 @@ namespace algorithms
         private MatrixField GetMatrixField(int? index, int? posX, int? posY)
         {
             var result = new MatrixField();
-            
-            if(index != null)
+
+            if (index != null)
             {
                 result = this.listaPowiazanWierzcholkow.Where(item => item.Index.Equals(index)).First();
             }
 
-            if(posX != null && posY != null)
+            if (posX != null && posY != null)
             {
-                result = this.listaPowiazanWierzcholkow
-                    .Where(item => (item.PosX.Equals(posX) && item.PosY.Equals(posY)))
-                    .First();
+                if (this.PointIsInsideMatrix((int)posX, (int)posY))
+                {
+                    result = this.listaPowiazanWierzcholkow
+                        .First(item => item.PosX.Equals(posX) && item.PosY.Equals(posY));
+                }
             }
-            
+
             return result;
         }
 
+        public bool IsItemAsMatrixPoint(int indexPunktuStartowego)
+        {
+            var point = this.GetMatrixField(indexPunktuStartowego, null, null);
+
+            return this.PointIsInsideMatrix(point.PosX, point.PosY);
+        }
+
+        public void SelectVisitedPoint(int indexPunktu)
+        {
+            var point = this.GetMatrixField(indexPunktu, null, null);
+
+            point.State = FieldState.Odwiedzony;
+        }
+
+        public void AddObstacle(List<int> wierzcholkiPrzeszkody)
+        {
+            foreach (var punkt in wierzcholkiPrzeszkody)
+            {
+                var point = this.GetMatrixField(punkt, null, null);
+                point.Walkable = FieldState.Zablokowany;
+            }
+        }
     }
 }
-

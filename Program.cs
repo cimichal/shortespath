@@ -13,39 +13,47 @@ namespace algorithms
 
             matrix.GenerateEmptyMatrix();
 
-            matrix.DisplayMatrix();
+            matrix.DisplayMatrix(true);
 
             matrix.AddEdge(new List<Tuple<int, int>>()
             {
-                Tuple.Create(1,2),
-                Tuple.Create(2,9),
-                Tuple.Create(8,1),
-                Tuple.Create(2,3),
+                Tuple.Create(1,12),
+                Tuple.Create(2,33),
+                Tuple.Create(8,66),
+                Tuple.Create(50,3),
                 Tuple.Create(2,8),
-                Tuple.Create(6,7),
+                Tuple.Create(6,50),
                 Tuple.Create(5,5),
+                Tuple.Create(69,1),
                 Tuple.Create(3,1),
-                Tuple.Create(3,1),
-                Tuple.Create(3,7),
-                Tuple.Create(3,7),
-                Tuple.Create(5,1),
-                Tuple.Create(3,3),
-                Tuple.Create(3,6),
+                Tuple.Create(3,20),
+                Tuple.Create(3,33),
+                Tuple.Create(67,1),
+                Tuple.Create(23,3),
+                Tuple.Create(3,45),
                 Tuple.Create(10,8)
             });
 
+            var obstacle = new List<int>()
+            {
+                33, 34, 35, 36, 46, 56, 55, 54, 53, 43
+            };
+
             Console.WriteLine();
             Console.WriteLine();
 
-            matrix.DisplayMatrix();
+            matrix.DisplayMatrix(false);
 
             Bfs bfsMatrix = new Bfs(1)
             {
                 Matrix = matrix
             };
 
-            bfsMatrix.ObliczBfs();
+            matrix.AddObstacle(obstacle);
 
+            bfsMatrix.ObliczBfs();
+            matrix.DisplayMatrix(false);
+            
             Console.ReadLine();
         }
     }
