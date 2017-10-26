@@ -7,9 +7,10 @@ namespace algorithms
     {
         private static void Main(string[] args)
         {
-            var wierzcholki = WygenerujWierzcholki(30);
+            var wierzcholki = WygenerujWierzcholki(20);
+
             var indexStart = 1;
-            var indexStop = 477;
+            var indexStop = 233;
 
             var matrixBfs = new Matrix(wierzcholki);
             var matrixDfs = new Matrix(wierzcholki);
@@ -23,10 +24,22 @@ namespace algorithms
             matrixBfs.GenerateEmptyMatrix();
             matrixDfs.GenerateEmptyMatrix();
             
-            var obstacle = new List<int>()
+            var square = new List<int>()
             {
                 33, 34, 35, 36, 46, 56, 55, 54, 53, 43
             };
+
+            var line = new List<int>()
+            {
+                
+            };
+
+            var openSquare = new List<int>()
+            {
+
+            };
+
+            matrixDfs.DisplayMatrix(true);
 
             Console.WriteLine();
             
@@ -40,7 +53,7 @@ namespace algorithms
                 Matrix = matrixDfs
             };
 
-            matrixBfs.AddObstacle(obstacle);
+            matrixBfs.AddObstacle(square);
 
             bfsMatrix.ObliczBfs();
             dfs.ObliczDfs();

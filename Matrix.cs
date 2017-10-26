@@ -58,8 +58,16 @@ namespace algorithms
             var kolumnIndex = 1;
 
             Console.WriteLine();
-            Console.WriteLine("1 2 3 4 5 6 7 8 9 10");
-            Console.WriteLine("---------------------");
+            for (int i = 1; i <= this.wierzcholki.Length; i++)
+            {
+                Console.Write("{0,4}", i);
+            }
+            Console.WriteLine();
+            for (int i = 1; i <= this.wierzcholki.Length; i++)
+            {
+                Console.Write("----");
+            }
+            Console.WriteLine();
 
             for (var wiersz = 1; wiersz <= this.wierzcholki.Length; wiersz++)
             {
@@ -69,17 +77,17 @@ namespace algorithms
 
                     if (displayIndex)
                     {
-                        Console.Write("{0} ", currentPoint.Index);
+                        Console.Write("{0,4}", currentPoint.Index);
                     }
                     else
                     {
                         if (currentPoint.Index.Equals(this.IndexPunktuKoncowego))
                         {
-                            Console.Write("E ");
+                            Console.Write("{0,2}", "E");
                         }
                         else if (currentPoint.Index.Equals(this.IndexPunktuStartowego))
                         {
-                            Console.Write("S ");
+                            Console.Write("{0,2}", "S");
                         }
                         else
                         {
@@ -88,10 +96,10 @@ namespace algorithms
                                 switch (currentPoint.Walkable)
                                 {
                                     case FieldState.Zablokowany:
-                                        Console.Write("- ");
+                                        Console.Write("{0,2}", "-");
                                         break;
                                     case FieldState.Odblokowany:
-                                        Console.Write("* ");
+                                        Console.Write("{0,2}", "+");
                                         break;
                                 }
                             }
@@ -100,17 +108,16 @@ namespace algorithms
                                 switch (currentPoint.State)
                                 {
                                     case FieldState.Nieodwiedzony:
-                                        Console.Write("0 ");
+                                        Console.Write("{0,2}",0);
                                         break;
                                     case FieldState.Odwiedzony:
-                                        Console.Write("1 ");
+                                        Console.Write("{0,2}",1);
                                         break;
                                     default:
                                         throw new ArgumentOutOfRangeException();
                                 }
                             }
                         }
-                        
                     }
                 }
                 Console.WriteLine("| {0}\t", kolumnIndex);
