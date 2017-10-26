@@ -10,7 +10,7 @@ namespace algorithms
             var wierzcholki = WygenerujWierzcholki(20);
 
             var indexStart = 1;
-            var indexStop = 233;
+            var indexStop = 338;
 
             var matrixBfs = new Matrix(wierzcholki);
             var matrixDfs = new Matrix(wierzcholki);
@@ -26,7 +26,9 @@ namespace algorithms
             
             var square = new List<int>()
             {
-                33, 34, 35, 36, 46, 56, 55, 54, 53, 43
+                167, 168, 169, 170, 171, 172, 192, 212, 232,
+                231, 230, 229, 228, 227,
+                207, 187
             };
 
             var line = new List<int>()
@@ -60,7 +62,15 @@ namespace algorithms
 
             matrixBfs.DisplayMatrix(false);
             matrixDfs.DisplayMatrix(false);
-            
+
+            var shortestPath = bfsMatrix.NajkrotszaDroga();
+            var shortestPathPoints = shortestPath(indexStop);
+
+            Console.WriteLine("BFS shortest path: {0,2}", string.Join(", ", shortestPathPoints));
+
+            matrixBfs.DisplayMatrixShortestPath(shortestPathPoints);
+            matrixBfs.DisplayMatrix(false);
+
             Console.ReadLine();
         }
 

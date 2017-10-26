@@ -113,6 +113,9 @@ namespace algorithms
                                     case FieldState.Odwiedzony:
                                         Console.Write("{0,2}",1);
                                         break;
+                                    case FieldState.ShortestPath:
+                                        ColoredConsoleWrite(ConsoleColor.Red, "->");
+                                        break;
                                     default:
                                         throw new ArgumentOutOfRangeException();
                                 }
@@ -274,5 +277,23 @@ namespace algorithms
                 point.Walkable = FieldState.Zablokowany;
             }
         }
+
+        public void DisplayMatrixShortestPath(IEnumerable<int> shortestPathPoints)
+        {
+            foreach (var shortestPathPoint in shortestPathPoints)
+            {
+                var point = this.GetMatrixField(shortestPathPoint, null, null);
+                point.State = FieldState.ShortestPath;
+            }
+        }
+
+        public static void ColoredConsoleWrite(ConsoleColor color, string text)
+        {
+            ConsoleColor originalColor = Console.ForegroundColor;
+            Console.ForegroundColor = color;
+            Console.Write("{0,2}", text);
+            Console.ForegroundColor = originalColor;
+        }
+
     }
 }

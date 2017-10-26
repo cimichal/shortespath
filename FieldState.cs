@@ -11,6 +11,7 @@ namespace algorithms
         Nieodwiedzony,
         Odwiedzony,
         Zablokowany,
-        Odblokowany
+        Odblokowany,
+        ShortestPath
     }
 }

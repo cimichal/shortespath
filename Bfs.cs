@@ -106,7 +106,7 @@ namespace algorithms
             //Console.Write("{0} ", sprawdzonyWierzcholek);
         }
 
-        public Func<int, IEnumerable<int>> ObliczNajkrotszaDroge()
+        public Func<int, IEnumerable<int>> NajkrotszaDroga()
         {
             var poprzednieDrogi = new Dictionary<int, int>();
             var kolejka = new Queue<int>();
