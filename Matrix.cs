@@ -13,7 +13,10 @@ namespace algorithms
         {
             this.wierzcholki = wierzcholki;
             this.listaPowiazanWierzcholkow = new List<MatrixField>();
+            this.obstacle = new Obstacle();
         }
+
+        public Obstacle obstacle { get; set; }
 
         public int IndexPunktuStartowego { get; set; }
         public int IndexPunktuKoncowego { get; set; }
@@ -25,7 +28,7 @@ namespace algorithms
             {
                 for (var kolumna = 1; kolumna <= this.wierzcholki.Length; kolumna++)
                 {
-                    this.listaPowiazanWierzcholkow.Add(new MatrixField
+                    var point = new MatrixField
                     {
                         Index = index,
                         Neighbors = new HashSet<int>(),
@@ -33,23 +36,25 @@ namespace algorithms
                         PosY = kolumna,
                         State = FieldState.Nieodwiedzony,
                         Walkable = FieldState.Odblokowany
-                    });
+                    };
+
+                    this.listaPowiazanWierzcholkow.Add(point);
+
                     index++;
                 }
             }
-        }
 
-        public void AddEdge(List<Tuple<int, int>> listaPolaczen)
-        {
-            foreach (var tuple in listaPolaczen)
+            for (var wiersz = 1; wiersz <= this.wierzcholki.Length; wiersz++)
             {
-                var point = this.GetMatrixField(tuple.Item1, null, null);
-                point.Neighbors.Add(tuple.Item2);
-                point.Walkable = FieldState.Odblokowany;
+                for (var kolumna = 1; kolumna <= this.wierzcholki.Length; kolumna++)
+                {
+                    var point = this.GetMatrixField(null, wiersz, kolumna);
 
-                var pointItem2 = this.GetMatrixField(tuple.Item2, null, null);
-                pointItem2.Neighbors.Add(tuple.Item1);
-                pointItem2.Walkable = FieldState.Odblokowany;
+                    if (this.PointIsInsideObstacle(kolumna, wiersz))
+                    {
+                        point.Walkable = FieldState.Zablokowany;
+                    }
+                }
             }
         }
 
@@ -58,12 +63,12 @@ namespace algorithms
             var kolumnIndex = 1;
 
             Console.WriteLine();
-            for (int i = 1; i <= this.wierzcholki.Length; i++)
+            for (var i = 1; i <= this.wierzcholki.Length; i++)
             {
-                Console.Write("{0,4}", i);
+                Console.Write("{0,3} ", i);
             }
             Console.WriteLine();
-            for (int i = 1; i <= this.wierzcholki.Length; i++)
+            for (var i = 1; i <= this.wierzcholki.Length; i++)
             {
                 Console.Write("----");
             }
@@ -77,17 +82,18 @@ namespace algorithms
 
                     if (displayIndex)
                     {
-                        Console.Write("{0,4}", currentPoint.Index);
+                        Console.Write(" {0}:({1},{2})", currentPoint.Index, currentPoint.PosX,
+                            currentPoint.PosY);
                     }
                     else
                     {
                         if (currentPoint.Index.Equals(this.IndexPunktuKoncowego))
                         {
-                            Console.Write("{0,2}", "E");
+                            ColoredConsoleWrite(ConsoleColor.Blue, "E");
                         }
                         else if (currentPoint.Index.Equals(this.IndexPunktuStartowego))
                         {
-                            Console.Write("{0,2}", "S");
+                            ColoredConsoleWrite(ConsoleColor.Yellow, "S");
                         }
                         else
                         {
@@ -96,7 +102,7 @@ namespace algorithms
                                 switch (currentPoint.Walkable)
                                 {
                                     case FieldState.Zablokowany:
-                                        Console.Write("{0,2}", "-");
+                                        ColoredConsoleWrite(ConsoleColor.DarkBlue, "-");
                                         break;
                                     case FieldState.Odblokowany:
                                         Console.Write("{0,2}", "+");
@@ -108,10 +114,10 @@ namespace algorithms
                                 switch (currentPoint.State)
                                 {
                                     case FieldState.Nieodwiedzony:
-                                        Console.Write("{0,2}",0);
+                                        Console.Write("{0,2}", 0);
                                         break;
                                     case FieldState.Odwiedzony:
-                                        Console.Write("{0,2}",1);
+                                        Console.Write("{0,2}", 1);
                                         break;
                                     case FieldState.ShortestPath:
                                         ColoredConsoleWrite(ConsoleColor.Red, "->");
@@ -196,7 +202,8 @@ namespace algorithms
 
         private bool PointIsWalkableAt(int neighborPosX, int neighborPosY)
         {
-            if (this.PointIsInsideMatrix(neighborPosX, neighborPosY))
+            if (this.PointIsInsideMatrix(neighborPosX, neighborPosY) &&
+                !this.PointIsInsideObstacle(neighborPosY, neighborPosX))
             {
                 var point = this.GetMatrixField(null, neighborPosX, neighborPosY);
 
@@ -209,6 +216,11 @@ namespace algorithms
             return false;
         }
 
+        private bool PointIsInsideObstacle(int neighborPosY, int neighborPosX)
+        {
+            return this.obstacle.CheckIfPointIsInsideObstacle(neighborPosX, neighborPosY);
+        }
+        
         private bool PointIsInsideMatrix(int neighborPosX, int neighborPosY)
         {
             return neighborPosX >= 1 && neighborPosX <= this.wierzcholki.Length && neighborPosY >= 1 &&
@@ -240,7 +252,7 @@ namespace algorithms
 
             if (index != null)
             {
-                result = this.listaPowiazanWierzcholkow.First(item => item.Index.Equals(index));
+                result = this.listaPowiazanWierzcholkow.FirstOrDefault(item => item.Index.Equals(index));
             }
 
             if (posX != null && posY != null)
@@ -269,13 +281,10 @@ namespace algorithms
             point.State = FieldState.Odwiedzony;
         }
 
-        public void AddObstacle(List<int> wierzcholkiPrzeszkody)
+        private void SetPointAsUnuncessible(int posX, int posY)
         {
-            foreach (var punkt in wierzcholkiPrzeszkody)
-            {
-                var point = this.GetMatrixField(punkt, null, null);
-                point.Walkable = FieldState.Zablokowany;
-            }
+            var point = this.GetMatrixField(null, posX, posY);
+            point.Walkable = FieldState.Zablokowany;
         }
 
         public void DisplayMatrixShortestPath(IEnumerable<int> shortestPathPoints)
@@ -287,13 +296,12 @@ namespace algorithms
             }
         }
 
-        public static void ColoredConsoleWrite(ConsoleColor color, string text)
+        private static void ColoredConsoleWrite(ConsoleColor color, string text)
         {
-            ConsoleColor originalColor = Console.ForegroundColor;
-            Console.ForegroundColor = color;
+            var originalColor = Console.BackgroundColor;
+            Console.BackgroundColor = color;
             Console.Write("{0,2}", text);
-            Console.ForegroundColor = originalColor;
+            Console.BackgroundColor = originalColor;
         }
-
     }
 }

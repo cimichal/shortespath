@@ -132,7 +132,7 @@ namespace algorithms
             {
                 var sciezka = new List<int>();
 
-                while (!wierzcholek.Equals(this.IndexPunktuStartowego))
+                while (!wierzcholek.Equals(this.IndexPunktuKoncowego))
                 {
                     sciezka.Add(wierzcholek);
                     wierzcholek = poprzednieDrogi[wierzcholek];
