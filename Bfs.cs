@@ -128,14 +128,15 @@ namespace algorithms
                 }
             }
 
-            IEnumerable<int> NajkrotszaDroga(int wierzcholek)
+            IEnumerable<int> NajkrotszaDroga(int indexStop)
             {
                 var sciezka = new List<int>();
+                var current = indexStop;
 
-                while (!wierzcholek.Equals(this.IndexPunktuKoncowego))
+                while (!current.Equals(this.IndexPunktuStartowego))
                 {
-                    sciezka.Add(wierzcholek);
-                    wierzcholek = poprzednieDrogi[wierzcholek];
+                    sciezka.Add(current);
+                    current = poprzednieDrogi[current];
                 }
 
                 sciezka.Add(this.IndexPunktuStartowego);

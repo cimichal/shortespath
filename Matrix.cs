@@ -13,10 +13,10 @@ namespace algorithms
         {
             this.wierzcholki = wierzcholki;
             this.listaPowiazanWierzcholkow = new List<MatrixField>();
-            this.obstacle = new Obstacle();
+            this.Obstacle = new Obstacle();
         }
 
-        public Obstacle obstacle { get; set; }
+        public Obstacle Obstacle { private get; set; }
 
         public int IndexPunktuStartowego { get; set; }
         public int IndexPunktuKoncowego { get; set; }
@@ -218,20 +218,13 @@ namespace algorithms
 
         private bool PointIsInsideObstacle(int neighborPosY, int neighborPosX)
         {
-            return this.obstacle.CheckIfPointIsInsideObstacle(neighborPosX, neighborPosY);
+            return this.Obstacle.CheckIfPointIsInsideObstacle(neighborPosX, neighborPosY);
         }
-        
+
         private bool PointIsInsideMatrix(int neighborPosX, int neighborPosY)
         {
             return neighborPosX >= 1 && neighborPosX <= this.wierzcholki.Length && neighborPosY >= 1 &&
                    neighborPosY <= this.wierzcholki.Length;
-        }
-
-        public HashSet<int> GetAllNeighbors(int index)
-        {
-            var matrixField = this.GetMatrixField(index, null, null);
-
-            return matrixField.Neighbors;
         }
 
         private void AddNewNeighbors(int indexPunktu, int neighborPosX, int neighborPosY)
@@ -281,12 +274,6 @@ namespace algorithms
             point.State = FieldState.Odwiedzony;
         }
 
-        private void SetPointAsUnuncessible(int posX, int posY)
-        {
-            var point = this.GetMatrixField(null, posX, posY);
-            point.Walkable = FieldState.Zablokowany;
-        }
-
         public void DisplayMatrixShortestPath(IEnumerable<int> shortestPathPoints)
         {
             foreach (var shortestPathPoint in shortestPathPoints)
@@ -302,6 +289,15 @@ namespace algorithms
             Console.BackgroundColor = color;
             Console.Write("{0,2}", text);
             Console.BackgroundColor = originalColor;
+        }
+
+        public void SelectShortestPath(IEnumerable<int> shortestPath)
+        {
+            foreach (var pointShort in shortestPath)
+            {
+                var point = this.GetMatrixField(pointShort, null, null);
+                point.State = FieldState.ShortestPath;
+            }
         }
     }
 }

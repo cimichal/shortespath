@@ -34,12 +34,7 @@ namespace algorithms
 
                 var recContaingPoint = rectangle.Contains(posY, posX);
 
-                if (recContaingPoint)
-                {
-                    return true;
-                }
-
-                return false;
+                return recContaingPoint;
             }
 
             return false;

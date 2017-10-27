@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using static System.Windows.Point;
 
 namespace algorithms
@@ -13,12 +14,20 @@ namespace algorithms
             var indexStart = 1;
             var indexStop = 338;
             
-            var points = new List<Tuple<int, int>>()
+            var pointsSquare = new List<Tuple<int, int>>()
             {
                 new Tuple<int, int>(15,7),  // A
                 new Tuple<int, int>(15,11), // B
                 new Tuple<int, int>(11,11), // C
                 new Tuple<int, int>(11,7),  // D
+            };
+
+            var points = new List<Tuple<int, int>>()
+            {
+                new Tuple<int, int>(19,6),  // A
+                new Tuple<int, int>(18,15), // B
+                new Tuple<int, int>(8,16), // C
+                new Tuple<int, int>(8,6),  // D
             };
 
             var obstacleSquare = new Obstacle
@@ -30,18 +39,12 @@ namespace algorithms
                     {"B", points[1]},
                     {"C", points[2]},
                     {"D", points[3]}
-                },
-                MatrixSize = wierzcholki.Length
+                }
             };
-
-            var obstacleLine = new Obstacle
-            {
-
-            };
-
+            
             var matrixBfs = new Matrix(wierzcholki)
             {
-                obstacle = obstacle
+                Obstacle = obstacleSquare
             };
 
             matrixBfs.GenerateEmptyMatrix();
@@ -65,9 +68,11 @@ namespace algorithms
             var shortestPath = bfsMatrix.NajkrotszaDroga();
             var shortestPathPoints = shortestPath(indexStop);
 
-            Console.WriteLine("BFS shortest path: {0,2}", string.Join(", ", shortestPathPoints));
+            var pathPoints = shortestPathPoints as int[] ?? shortestPathPoints.ToArray();
 
-            matrixBfs.DisplayMatrixShortestPath(shortestPathPoints);
+            Console.WriteLine("BFS shortest path: {0,2}", string.Join(", ", pathPoints));
+
+            matrixBfs.DisplayMatrixShortestPath(pathPoints);
             matrixBfs.DisplayMatrix(false);
 
             Console.ReadLine();
