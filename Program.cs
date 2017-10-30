@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using static System.Windows.Point;
 
 namespace algorithms
 {
@@ -9,66 +8,40 @@ namespace algorithms
     {
         private static void Main(string[] args)
         {
+            var obstacleGenerator = ObstacleGenerator.Instance;
             var wierzcholki = WygenerujWierzcholki(20);
-
             var indexStart = 1;
-            var indexStop = 338;
-            
-            var pointsSquare = new List<Tuple<int, int>>()
-            {
-                new Tuple<int, int>(15,7),  // A
-                new Tuple<int, int>(15,11), // B
-                new Tuple<int, int>(11,11), // C
-                new Tuple<int, int>(11,7),  // D
+            var indexStop = 277;
+
+            var edges = new Dictionary<string, Tuple<int, int>>(){
+                {"A", new Tuple<int, int>(19,6)},
+                {"B", new Tuple<int, int>(18,15)},
+                {"C", new Tuple<int, int>(8,16)},
+                {"D", new Tuple<int, int>(8,6)}
             };
 
-            var points = new List<Tuple<int, int>>()
-            {
-                new Tuple<int, int>(19,6),  // A
-                new Tuple<int, int>(18,15), // B
-                new Tuple<int, int>(8,16), // C
-                new Tuple<int, int>(8,6),  // D
-            };
-
-            var obstacleSquare = new Obstacle
-            {
-                ObstacleType = ObstacleType.Open,
-                Edges = new Dictionary<string, Tuple<int,int>>()
-                {
-                    {"A", points[0]},
-                    {"B", points[1]},
-                    {"C", points[2]},
-                    {"D", points[3]}
-                }
-            };
+            var squareIndex = obstacleGenerator.GenerateObstacle(ObstacleType.Square, ObstacleType.Open, edges);
             
             var matrixBfs = new Matrix(wierzcholki)
             {
-                Obstacle = obstacleSquare
+                Obstacle = obstacleGenerator.GeneratedObstacles[squareIndex]
             };
 
             matrixBfs.GenerateEmptyMatrix();
             
             matrixBfs.IndexPunktuKoncowego = indexStop;
             matrixBfs.IndexPunktuStartowego = indexStart;
-            
-            matrixBfs.DisplayMatrix(true);
-
-            Console.WriteLine();
-
+                        
             var bfsMatrix = new Bfs(indexStart, indexStop)
             {
                 Matrix = matrixBfs
             };
 
             bfsMatrix.ObliczBfs();
+            
+            var shortestPathPoints = bfsMatrix.NajkrotszaDroga();
 
-            matrixBfs.DisplayMatrix(false);
-
-            var shortestPath = bfsMatrix.NajkrotszaDroga();
-            var shortestPathPoints = shortestPath(indexStop);
-
-            var pathPoints = shortestPathPoints as int[] ?? shortestPathPoints.ToArray();
+            var pathPoints = shortestPathPoints.ToArray();
 
             Console.WriteLine("BFS shortest path: {0,2}", string.Join(", ", pathPoints));
 

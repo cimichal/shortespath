@@ -106,7 +106,7 @@ namespace algorithms
             //Console.Write("{0} ", sprawdzonyWierzcholek);
         }
 
-        public Func<int, IEnumerable<int>> NajkrotszaDroga()
+        public List<int> NajkrotszaDroga()
         {
             var poprzednieDrogi = new Dictionary<int, int>();
             var kolejka = new Queue<int>();
@@ -128,24 +128,25 @@ namespace algorithms
                 }
             }
 
-            IEnumerable<int> NajkrotszaDroga(int indexStop)
+            return this.NajkrotszaDroga(poprzednieDrogi);
+        }
+
+
+        private List<int> NajkrotszaDroga(Dictionary<int, int> poprzednieDrogi)
+        {
+            var sciezka = new List<int>();
+            var current = this.IndexPunktuKoncowego;
+
+            while (!current.Equals(this.IndexPunktuStartowego))
             {
-                var sciezka = new List<int>();
-                var current = indexStop;
-
-                while (!current.Equals(this.IndexPunktuStartowego))
-                {
-                    sciezka.Add(current);
-                    current = poprzednieDrogi[current];
-                }
-
-                sciezka.Add(this.IndexPunktuStartowego);
-                sciezka.Reverse();
-
-                return sciezka;
+                sciezka.Add(current);
+                current = poprzednieDrogi[current];
             }
 
-            return NajkrotszaDroga;
+            sciezka.Add(this.IndexPunktuStartowego);
+            sciezka.Reverse();
+
+            return sciezka;
         }
     }
 

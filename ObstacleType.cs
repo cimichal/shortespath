@@ -3,6 +3,9 @@
     public enum ObstacleType
     {
         Open,
-        Close
+        Close,
+        Square, 
+        Traingle,
+        Line
     }
 }

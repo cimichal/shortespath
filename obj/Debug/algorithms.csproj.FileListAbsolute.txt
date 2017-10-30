@@ -16,3 +16,4 @@ C:\Users\Michal\Desktop\metoduSztuczenejInteligencji\pathFinding\bin\Debug\algor
 C:\Users\Michal\Desktop\metoduSztuczenejInteligencji\pathFinding\bin\Debug\System.ValueTuple.dll
 C:\Users\Michal\Desktop\metoduSztuczenejInteligencji\pathFinding\bin\Debug\System.ValueTuple.xml
 C:\Users\mcies\Documents\Studia\sztucznaInteligencja\Project\CustomPorcject\algorithms\bin\Debug\WindowsBase.dll
+C:\Users\Michal\Desktop\metoduSztuczenejInteligencji\pathFinding\bin\Debug\WindowsBase.dll
