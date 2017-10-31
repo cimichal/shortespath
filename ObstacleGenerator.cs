@@ -76,19 +76,24 @@ namespace algorithms
 
         private IEnumerable<Tuple<int, int>> GenerateLine(Dictionary<string, Tuple<int, int>> edges)
         {
+            if (edges == null)
+            {
+                Console.WriteLine("Please add edges.");
+            }
+
             var points = new List<Tuple<int, int>>();
 
-            if (edges["S"].Item1 == edges["ST"].Item1) // horizontally y
+            if (edges != null && edges["S"].Item1 == edges["ST"].Item1) // horizontally y
             {
-                for (int i = edges["S"].Item2; i <= edges["ST"].Item2; i++)
+                for (var i = edges["S"].Item2; i <= edges["ST"].Item2; i++)
                 {
                     points.Add(new Tuple<int, int>(edges["S"].Item1, i));
                 }
             }
 
-            if (edges["S"].Item2 == edges["ST"].Item2) // vertically x
+            if (edges != null && edges["S"].Item2 == edges["ST"].Item2) // vertically x
             {
-                for (int i = edges["S"].Item1; i < edges["ST"].Item1; i++)
+                for (var i = edges["S"].Item1; i < edges["ST"].Item1; i++)
                 {
                     points.Add(new Tuple<int, int>(i, edges["S"].Item2));
                 }

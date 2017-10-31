@@ -15,10 +15,11 @@ namespace algorithms
 
         private int IndexPunktuStartowego { get; }
         private int IndexPunktuKoncowego { get; }
-        public Matrix Matrix { get; set; }
         private Queue<int> StosWierzcholkowDoOdwiedzenia { get; }
         private HashSet<int> ListaOdwiedzonychWierzcholkow { get; }
         private bool OdwiedzonoOstatniWierzcholek { get; set; }
+
+        public Matrix Matrix { get; set; }
 
         public bool ObliczBfs()
         {
@@ -58,17 +59,38 @@ namespace algorithms
             return true;
         }
 
-        private bool ListaWierzcholkowPosiadaPunktStartowy(DataStructureType dataStructureType)
+        public List<int> NajkrotszaDroga()
         {
-            switch (dataStructureType)
+            var poprzednieDrogi = new Dictionary<int, int>();
+            var kolejka = new Queue<int>();
+
+            kolejka.Enqueue(this.IndexPunktuStartowego);
+
+            while (kolejka.Count > 0)
             {
-                case DataStructureType.Matrix:
-                    return this.Matrix.IsItemAsMatrixPoint(this.IndexPunktuStartowego);
+                var aktualnyWierzcholek = kolejka.Dequeue();
+                foreach (var sasiad in this.PobierzListeSasiednichWierzcholkow(aktualnyWierzcholek,
+                    DataStructureType.Matrix))
+                {
+                    if (poprzednieDrogi.ContainsKey(sasiad))
+                    {
+                        continue;
+                    }
+
+                    poprzednieDrogi[sasiad] = aktualnyWierzcholek;
+                    kolejka.Enqueue(sasiad);
+                }
             }
-            return false;
+
+            return this.NajkrotszaDroga(poprzednieDrogi);
         }
 
-        private List<int> PobierzListeSasiednichWierzcholkow(int wierzcholekDoSprawdzenia,
+        private bool ListaWierzcholkowPosiadaPunktStartowy(DataStructureType dataStructureType)
+        {
+            return dataStructureType == DataStructureType.Matrix && this.Matrix.IsItemAsMatrixPoint(this.IndexPunktuStartowego);
+        }
+
+        private IEnumerable<int> PobierzListeSasiednichWierzcholkow(int wierzcholekDoSprawdzenia,
             DataStructureType dataStructureType)
         {
             var index = wierzcholekDoSprawdzenia;
@@ -103,33 +125,6 @@ namespace algorithms
         {
             this.ListaOdwiedzonychWierzcholkow.Add(sprawdzonyWierzcholek);
             this.Matrix.SelectVisitedPoint(sprawdzonyWierzcholek);
-            //Console.Write("{0} ", sprawdzonyWierzcholek);
-        }
-
-        public List<int> NajkrotszaDroga()
-        {
-            var poprzednieDrogi = new Dictionary<int, int>();
-            var kolejka = new Queue<int>();
-
-            kolejka.Enqueue(this.IndexPunktuStartowego);
-
-            while (kolejka.Count > 0)
-            {
-                var aktualnyWierzcholek = kolejka.Dequeue();
-                foreach (var sasiad in this.PobierzListeSasiednichWierzcholkow(aktualnyWierzcholek,
-                    DataStructureType.Matrix))
-                {
-                    if (poprzednieDrogi.ContainsKey(sasiad))
-                    {
-                        continue;
-                    }
-
-                    poprzednieDrogi[sasiad] = aktualnyWierzcholek;
-                    kolejka.Enqueue(sasiad);
-                }
-            }
-
-            return this.NajkrotszaDroga(poprzednieDrogi);
         }
 
         private List<int> NajkrotszaDroga(Dictionary<int, int> poprzednieDrogi)
