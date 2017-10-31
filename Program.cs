@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace algorithms
 {
@@ -7,9 +8,19 @@ namespace algorithms
     {
         private static void Main(string[] args)
         {
+            #region Diagnostics
+
+            var executionBFS = new Stopwatch();
+            var executionDFS = new Stopwatch();
+
+            var executionBFS_SP = new Stopwatch();
+            var executionDFS_SP = new Stopwatch();
+
+            #endregion
+
             #region Init
             var obstacleGenerator = ObstacleGenerator.Instance;
-            var wierzcholki = WygenerujWierzcholki(20);
+            var wierzcholki = WygenerujWierzcholki(40);
             var indexStart = 1;
             var indexStop = 277;
 
@@ -55,10 +66,14 @@ namespace algorithms
                 Matrix = matrix
             };
 
+            executionBFS.Start();
             bfs.ObliczBfs();
+            executionBFS.Stop();
 
+            executionBFS_SP.Start();
             var shortestPathPointsBfs = bfs.NajkrotszaDroga().ToArray();
-            
+            executionBFS_SP.Stop();
+
             Console.WriteLine("BFS shortest path: {0,2}", string.Join(", ", shortestPathPointsBfs));
 
             matrix.DisplayMatrixShortestPath(shortestPathPointsBfs);
@@ -77,12 +92,23 @@ namespace algorithms
 
             matrix.GenerateEmptyMatrix();
 
+            executionDFS.Start();
             dfs.ObliczDfs();
+            executionDFS.Stop();
 
+            executionDFS_SP.Start();
             var shortestPathPointsDfs = dfs.NajkrotszaDroga().ToArray();
+            executionDFS_SP.Stop();
 
             matrix.DisplayMatrixShortestPath(shortestPathPointsDfs);
             matrix.DisplayMatrix(false);
+
+            #endregion
+
+            #region Measurement
+
+            Console.WriteLine("BFS: {0}, SP: {1}", executionBFS.ElapsedMilliseconds, executionBFS_SP.ElapsedMilliseconds);
+            Console.WriteLine("DFS: {0}, SP: {1}", executionDFS.ElapsedMilliseconds, executionDFS_SP.ElapsedMilliseconds);
 
             #endregion
 
