@@ -7,6 +7,7 @@ namespace algorithms
     {
         private static void Main(string[] args)
         {
+            #region Init
             var obstacleGenerator = ObstacleGenerator.Instance;
             var wierzcholki = WygenerujWierzcholki(20);
             var indexStart = 1;
@@ -21,6 +22,7 @@ namespace algorithms
             };
 
             var squareIndex = obstacleGenerator.GenerateObstacle(ObstacleType.Square, ObstacleType.Close, edges);
+
             var lineIndex = obstacleGenerator.GenerateObstacle(ObstacleType.Line, ObstacleType.Open,
                 new Dictionary<string, Tuple<int, int>>
                 {
@@ -28,37 +30,59 @@ namespace algorithms
                     {"ST", new Tuple<int, int>(12, 10)}
                 });
 
+            #endregion
+
+            #region Matrix
+
+            var matrix = new Matrix(wierzcholki)
+            {
+                IsObstacleOnTheMatrix = false,
+                Obstacle = obstacleGenerator.GeneratedObstacles[squareIndex],
+                IndexPunktuKoncowego = indexStop,
+                IndexPunktuStartowego = indexStart
+            };
+
+            matrix.GenerateEmptyMatrix();
+
+            #endregion
+
             #region BFS
-            var matrixBfs = new Matrix(wierzcholki)
+
+            Console.WriteLine("BFS");
+
+            var bfs = new Bfs(indexStart, indexStop)
             {
-                IsObstacleOnTheMatrix = true,
-                Obstacle = obstacleGenerator.GeneratedObstacles[lineIndex]
+                Matrix = matrix
             };
 
-            matrixBfs.GenerateEmptyMatrix();
+            bfs.ObliczBfs();
 
-            matrixBfs.IndexPunktuKoncowego = indexStop;
-            matrixBfs.IndexPunktuStartowego = indexStart;
+            var shortestPathPointsBfs = bfs.NajkrotszaDroga().ToArray();
+            
+            Console.WriteLine("BFS shortest path: {0,2}", string.Join(", ", shortestPathPointsBfs));
 
-            var bfsMatrix = new Bfs(indexStart, indexStop)
-            {
-                Matrix = matrixBfs
-            };
-
-            bfsMatrix.ObliczBfs();
-
-            var shortestPathPoints = bfsMatrix.NajkrotszaDroga();
-
-            var pathPoints = shortestPathPoints.ToArray();
-
-            Console.WriteLine("BFS shortest path: {0,2}", string.Join(", ", pathPoints));
-
-            matrixBfs.DisplayMatrixShortestPath(pathPoints);
-            matrixBfs.DisplayMatrix(false);
+            matrix.DisplayMatrixShortestPath(shortestPathPointsBfs);
+            matrix.DisplayMatrix(false);
 
             #endregion
 
             #region DFS
+
+            Console.WriteLine("DFS");
+
+            var dfs = new Dfs(indexStart, indexStop)
+            {
+                Matrix = matrix
+            };
+
+            matrix.GenerateEmptyMatrix();
+
+            dfs.ObliczDfs();
+
+            var shortestPathPointsDfs = dfs.NajkrotszaDroga().ToArray();
+
+            matrix.DisplayMatrixShortestPath(shortestPathPointsDfs);
+            matrix.DisplayMatrix(false);
 
             #endregion
 

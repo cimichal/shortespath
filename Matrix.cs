@@ -23,6 +23,8 @@ namespace algorithms
 
         public void GenerateEmptyMatrix()
         {
+            this.listaPowiazanWierzcholkow.Clear();
+
             var index = 1;
             for (var wiersz = 1; wiersz <= this.wierzcholki.Length; wiersz++)
             {
@@ -117,7 +119,7 @@ namespace algorithms
                                         Console.Write("{0,2}", 0);
                                         break;
                                     case FieldState.Odwiedzony:
-                                        Console.Write("{0,2}", 1);
+                                        ColoredConsoleWrite(ConsoleColor.DarkYellow, "1");
                                         break;
                                     case FieldState.ShortestPath:
                                         ColoredConsoleWrite(ConsoleColor.Red, "->");
