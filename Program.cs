@@ -25,9 +25,10 @@ namespace algorithms
                 new Dictionary<string, Tuple<int, int>>
                 {
                     {"S", new Tuple<int, int>(1, 10)},
-                    {"ST", new Tuple<int, int>(10, 10)}
+                    {"ST", new Tuple<int, int>(12, 10)}
                 });
 
+            #region BFS
             var matrixBfs = new Matrix(wierzcholki)
             {
                 IsObstacleOnTheMatrix = true,
@@ -54,6 +55,12 @@ namespace algorithms
 
             matrixBfs.DisplayMatrixShortestPath(pathPoints);
             matrixBfs.DisplayMatrix(false);
+
+            #endregion
+
+            #region DFS
+
+            #endregion
 
             Console.ReadLine();
         }

@@ -5,6 +5,7 @@ namespace algorithms
 {
     public class Bfs
     {
+
         public Bfs(int indexPunktuStartowego, int indexPunktuKoncowego)
         {
             this.IndexPunktuStartowego = indexPunktuStartowego;
@@ -18,6 +19,7 @@ namespace algorithms
         private Queue<int> StosWierzcholkowDoOdwiedzenia { get; }
         private HashSet<int> ListaOdwiedzonychWierzcholkow { get; }
         private bool OdwiedzonoOstatniWierzcholek { get; set; }
+        private bool currentPointAvalaible { get; set; } = true;
 
         public Matrix Matrix { get; set; }
 
@@ -132,10 +134,19 @@ namespace algorithms
             var sciezka = new List<int>();
             var current = this.IndexPunktuKoncowego;
 
-            while (!current.Equals(this.IndexPunktuStartowego))
+            while (!current.Equals(this.IndexPunktuStartowego) && this.currentPointAvalaible)
             {
                 sciezka.Add(current);
-                current = poprzednieDrogi[current];
+
+                if (poprzednieDrogi.ContainsKey(current))
+                {
+                    current = poprzednieDrogi[current];
+                }
+                else
+                {
+                    this.currentPointAvalaible = false;
+                }
+                
             }
 
             sciezka.Add(this.IndexPunktuStartowego);
