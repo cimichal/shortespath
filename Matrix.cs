@@ -17,7 +17,7 @@ namespace algorithms
         }
 
         public Obstacle Obstacle { private get; set; }
-
+        public bool IsObstacleOnTheMatrix { get; set; }
         public int IndexPunktuStartowego { get; set; }
         public int IndexPunktuKoncowego { get; set; }
 
@@ -65,12 +65,12 @@ namespace algorithms
             Console.WriteLine();
             for (var i = 1; i <= this.wierzcholki.Length; i++)
             {
-                Console.Write("{0,3} ", i);
+                Console.Write("{0,2} ", i);
             }
             Console.WriteLine();
             for (var i = 1; i <= this.wierzcholki.Length; i++)
             {
-                Console.Write("----");
+                Console.Write("---");
             }
             Console.WriteLine();
 
@@ -218,7 +218,12 @@ namespace algorithms
 
         private bool PointIsInsideObstacle(int neighborPosY, int neighborPosX)
         {
-            return this.Obstacle.CheckIfPointIsInsideObstacle(neighborPosX, neighborPosY);
+            if (this.IsObstacleOnTheMatrix.Equals(true))
+            {
+                return this.Obstacle.CheckIfPointIsInsideObstacle(neighborPosX, neighborPosY);
+            }
+
+            return false;
         }
 
         private bool PointIsInsideMatrix(int neighborPosX, int neighborPosY)

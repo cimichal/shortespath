@@ -13,6 +13,18 @@ namespace algorithms
 
         public bool CheckIfPointIsInsideObstacle(int posX, int posY)
         {
+            if (IsObstacleOpen == ObstacleType.Open)
+            {
+                foreach (var point in Points)
+                {
+                    if(point.Item1 == posX && point.Item2 == posY)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
             var recWidth = this.Edges["B"].Item2 - this.Edges["A"].Item2;
             var recHeihgt = this.Edges["B"].Item1 - this.Edges["C"].Item1;
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace algorithms
 {
@@ -20,11 +19,17 @@ namespace algorithms
                 {"D", new Tuple<int, int>(8,6)}
             };
 
-            var squareIndex = obstacleGenerator.GenerateObstacle(ObstacleType.Square, ObstacleType.Open, edges);
-            
+            var squareIndex = obstacleGenerator.GenerateObstacle(ObstacleType.Square, ObstacleType.Close, edges);
+            var lineIndex = obstacleGenerator.GenerateObstacle(ObstacleType.Line, ObstacleType.Open, new Dictionary<string, Tuple<int, int>>
+            {
+                { "S", new Tuple<int,int>(1,10) },
+                { "ST", new Tuple<int, int>(10,10) }
+            });
+
             var matrixBfs = new Matrix(wierzcholki)
             {
-                Obstacle = obstacleGenerator.GeneratedObstacles[squareIndex]
+                IsObstacleOnTheMatrix = true,
+                Obstacle = obstacleGenerator.GeneratedObstacles[lineIndex]
             };
 
             matrixBfs.GenerateEmptyMatrix();
