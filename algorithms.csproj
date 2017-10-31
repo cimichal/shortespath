@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bfs.cs" />
+    <Compile Include="DataStructureType.cs" />
     <Compile Include="Dfs.cs" />
     <Compile Include="FieldState.cs" />
     <Compile Include="Graph.cs" />

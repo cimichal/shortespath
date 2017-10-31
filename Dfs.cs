@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace algorithms
 {
@@ -18,8 +17,7 @@ namespace algorithms
         public Matrix Matrix { get; set; }
         private Stack<int> StosWierzcholkowDoOdwiedzenia { get; }
         private HashSet<int> ListaOdwiedzonychWierzcholkow { get; }
-        private bool OdwiedzonoOstatniWierzcholek { get; set; } = false;
-
+        private bool OdwiedzonoOstatniWierzcholek { get; set; }
 
         public bool ObliczDfs()
         {

@@ -4,7 +4,7 @@
     {
         Open,
         Close,
-        Square, 
+        Square,
         Traingle,
         Line
     }

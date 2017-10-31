@@ -18,7 +18,7 @@ namespace algorithms
         public Matrix Matrix { get; set; }
         private Queue<int> StosWierzcholkowDoOdwiedzenia { get; }
         private HashSet<int> ListaOdwiedzonychWierzcholkow { get; }
-        private bool OdwiedzonoOstatniWierzcholek { get; set; } = false;
+        private bool OdwiedzonoOstatniWierzcholek { get; set; }
 
         public bool ObliczBfs()
         {
@@ -116,7 +116,8 @@ namespace algorithms
             while (kolejka.Count > 0)
             {
                 var aktualnyWierzcholek = kolejka.Dequeue();
-                foreach (var sasiad in this.PobierzListeSasiednichWierzcholkow(aktualnyWierzcholek, DataStructureType.Matrix))
+                foreach (var sasiad in this.PobierzListeSasiednichWierzcholkow(aktualnyWierzcholek,
+                    DataStructureType.Matrix))
                 {
                     if (poprzednieDrogi.ContainsKey(sasiad))
                     {
@@ -130,7 +131,6 @@ namespace algorithms
 
             return this.NajkrotszaDroga(poprzednieDrogi);
         }
-
 
         private List<int> NajkrotszaDroga(Dictionary<int, int> poprzednieDrogi)
         {
@@ -148,11 +148,5 @@ namespace algorithms
 
             return sciezka;
         }
-    }
-
-    public enum DataStructureType
-    {
-        Graf,
-        Matrix
     }
 }

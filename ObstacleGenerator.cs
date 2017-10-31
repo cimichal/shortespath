@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace algorithms
 {
-    class ObstacleGenerator
+    internal class ObstacleGenerator
     {
         private static ObstacleGenerator instance;
-        private ObstacleGenerator() { }
+
+        private ObstacleGenerator()
+        {
+        }
+
         public static ObstacleGenerator Instance
         {
             get
@@ -22,14 +24,16 @@ namespace algorithms
             }
         }
 
+        public Dictionary<int, Obstacle> GeneratedObstacles { get; set; } = new Dictionary<int, Obstacle>();
 
-        public Dictionary<int,Obstacle> GeneratedObstacles { get; set; } = new Dictionary<int, Obstacle>();
-
-        public int GenerateObstacle(ObstacleType obstacleType, ObstacleType isOpenObstacle, Dictionary<string, Tuple<int,int>> edges)
+        public int GenerateObstacle(ObstacleType obstacleType, ObstacleType isOpenObstacle,
+            Dictionary<string, Tuple<int, int>> edges)
         {
-            var lastIndexInDictionary = this.GeneratedObstacles.Count.Equals(0) ? 0 : this.GeneratedObstacles.Last().Key;
+            var lastIndexInDictionary = this.GeneratedObstacles.Count.Equals(0)
+                ? 0
+                : this.GeneratedObstacles.Last().Key;
             var indexOfNewItem = lastIndexInDictionary + 1;
-            
+
             switch (obstacleType)
             {
                 case ObstacleType.Open:
@@ -39,7 +43,7 @@ namespace algorithms
                     break;
 
                 case ObstacleType.Square:
-                    var newSquare = new Obstacle()
+                    var newSquare = new Obstacle
                     {
                         Edges = edges,
                         IsObstacleOpen = isOpenObstacle,
@@ -53,7 +57,7 @@ namespace algorithms
                     break;
 
                 case ObstacleType.Line:
-                    var newLine = new Obstacle()
+                    var newLine = new Obstacle
                     {
                         Points = this.GenerateLine(edges),
                         ObstacleType = ObstacleType.Line,
@@ -72,8 +76,8 @@ namespace algorithms
 
         private IEnumerable<Tuple<int, int>> GenerateLine(Dictionary<string, Tuple<int, int>> edges)
         {
-            var points = new List<Tuple<int, int>> { };
-            
+            var points = new List<Tuple<int, int>>();
+
             if (edges["S"].Item1 == edges["ST"].Item1) // horizontally y
             {
                 for (int i = edges["S"].Item2; i <= edges["ST"].Item2; i++)
@@ -89,7 +93,7 @@ namespace algorithms
                     points.Add(new Tuple<int, int>(i, edges["S"].Item2));
                 }
             }
-            
+
             return points;
         }
     }

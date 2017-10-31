@@ -12,19 +12,21 @@ namespace algorithms
             var indexStart = 1;
             var indexStop = 277;
 
-            var edges = new Dictionary<string, Tuple<int, int>>(){
-                {"A", new Tuple<int, int>(19,6)},
-                {"B", new Tuple<int, int>(18,15)},
-                {"C", new Tuple<int, int>(8,16)},
-                {"D", new Tuple<int, int>(8,6)}
+            var edges = new Dictionary<string, Tuple<int, int>>
+            {
+                {"A", new Tuple<int, int>(19, 6)},
+                {"B", new Tuple<int, int>(18, 15)},
+                {"C", new Tuple<int, int>(8, 16)},
+                {"D", new Tuple<int, int>(8, 6)}
             };
 
             var squareIndex = obstacleGenerator.GenerateObstacle(ObstacleType.Square, ObstacleType.Close, edges);
-            var lineIndex = obstacleGenerator.GenerateObstacle(ObstacleType.Line, ObstacleType.Open, new Dictionary<string, Tuple<int, int>>
-            {
-                { "S", new Tuple<int,int>(1,10) },
-                { "ST", new Tuple<int, int>(10,10) }
-            });
+            var lineIndex = obstacleGenerator.GenerateObstacle(ObstacleType.Line, ObstacleType.Open,
+                new Dictionary<string, Tuple<int, int>>
+                {
+                    {"S", new Tuple<int, int>(1, 10)},
+                    {"ST", new Tuple<int, int>(10, 10)}
+                });
 
             var matrixBfs = new Matrix(wierzcholki)
             {
@@ -33,17 +35,17 @@ namespace algorithms
             };
 
             matrixBfs.GenerateEmptyMatrix();
-            
+
             matrixBfs.IndexPunktuKoncowego = indexStop;
             matrixBfs.IndexPunktuStartowego = indexStart;
-                        
+
             var bfsMatrix = new Bfs(indexStart, indexStop)
             {
                 Matrix = matrixBfs
             };
 
             bfsMatrix.ObliczBfs();
-            
+
             var shortestPathPoints = bfsMatrix.NajkrotszaDroga();
 
             var pathPoints = shortestPathPoints.ToArray();

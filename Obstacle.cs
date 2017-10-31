@@ -13,11 +13,11 @@ namespace algorithms
 
         public bool CheckIfPointIsInsideObstacle(int posX, int posY)
         {
-            if (IsObstacleOpen == ObstacleType.Open)
+            if (this.IsObstacleOpen == ObstacleType.Open)
             {
-                foreach (var point in Points)
+                foreach (var point in this.Points)
                 {
-                    if(point.Item1 == posX && point.Item2 == posY)
+                    if (point.Item1 == posX && point.Item2 == posY)
                     {
                         return true;
                     }
