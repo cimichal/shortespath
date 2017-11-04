@@ -202,6 +202,132 @@ namespace algorithms
             return walkbaleNeighbors;
         }
 
+        public List<MatrixField> GetWalkableNeighbors(int indexPunktu, bool isAStartAlgorithm)
+        {
+            var walkableNodes = new List<MatrixField>();
+            var currentPoint = this.GetMatrixField(indexPunktu, null, null);
+            var walkableNeighbors = this.GetWalkableNeighbors(indexPunktu);
+
+            this.InitGhForMatrixFields(walkableNeighbors);
+            
+            foreach (var walkableNeighbor in walkableNeighbors)
+            {
+                var walkableNeighborPoint = this.GetMatrixField(walkableNeighbor, null, null);
+
+                if (walkableNeighborPoint.State == FieldState.Odwiedzony)
+                {
+                    continue;
+                }
+
+                if (walkableNeighborPoint.Walkable == FieldState.Zablokowany)
+                {
+                    continue;
+                }
+
+                if (indexPunktu == this.IndexPunktuStartowego)
+                {
+                    walkableNeighborPoint.ParentField = currentPoint;
+                    walkableNodes.Add(walkableNeighborPoint);
+                }
+
+                if (walkableNeighborPoint.State == FieldState.Odwiedzony)
+                {
+                    walkableNeighborPoint.ParentField = currentPoint;
+                    walkableNeighborPoint.State = FieldState.Nieodwiedzony;
+                    walkableNodes.Add(walkableNeighborPoint);
+                }
+                else
+                {
+                    var traversalCost = this.GetTravelsalCostFromParent(walkableNeighbor);
+                    var tempG = currentPoint.G + traversalCost;
+                    if (tempG < walkableNeighborPoint.G)
+                    {
+                        walkableNeighborPoint.ParentField = currentPoint;
+                        walkableNodes.Add(walkableNeighborPoint);
+                    }
+                }
+            }
+
+            return walkableNodes;
+        }
+
+        public bool IsItemAsMatrixPoint(int indexPunktuStartowego)
+        {
+            var point = this.GetMatrixField(indexPunktuStartowego, null, null);
+
+            return this.PointIsInsideMatrix(point.PosX, point.PosY);
+        }
+
+        public void SelectVisitedPoint(int indexPunktu)
+        {
+            var point = this.GetMatrixField(indexPunktu, null, null);
+
+            point.State = FieldState.Odwiedzony;
+        }
+
+        public void DisplayMatrixShortestPath(IEnumerable<int> shortestPathPoints)
+        {
+            foreach (var shortestPathPoint in shortestPathPoints)
+            {
+                var point = this.GetMatrixField(shortestPathPoint, null, null);
+                point.State = FieldState.ShortestPath;
+            }
+        }
+
+        public void SelectShortestPath(IEnumerable<int> shortestPath)
+        {
+            foreach (var pointShort in shortestPath)
+            {
+                var point = this.GetMatrixField(pointShort, null, null);
+                point.State = FieldState.ShortestPath;
+            }
+        }
+
+        private void InitGhForMatrixFields(List<int> walkableNeighbors)
+        {
+            foreach (var walkableNeighbor in walkableNeighbors)
+            {
+                var point = this.GetMatrixField(walkableNeighbor, null, null);
+                point.G = this.GetTrabelsalCostFromStartPoint(point.Index);
+                point.H = this.GetTrabelsalCostToEndPoint(point.Index);
+            }
+        }
+
+        private double GetTravelsalCostFromParent(int walkableNeighbor)
+        {
+            var currentPoint = this.GetMatrixField(walkableNeighbor, null, null);
+            var parentPoint = this.GetMatrixField(currentPoint.ParentField.Index, null, null);
+
+            if (walkableNeighbor == this.IndexPunktuStartowego)
+            {
+                return 0;
+            }
+
+            var distance = GetDistance(currentPoint.PosX, parentPoint.PosX, currentPoint.PosY, parentPoint.PosY);
+
+            return distance;
+        }
+
+        private float GetTrabelsalCostToEndPoint(int point)
+        {
+            var currentPoint = this.GetMatrixField(point, null, null);
+            var endPoint = this.GetMatrixField(this.IndexPunktuKoncowego, null, null);
+
+            var distance = GetDistance(currentPoint.PosX, currentPoint.PosY, endPoint.PosX, endPoint.PosY);
+
+            return distance;
+        }
+
+        private float GetTrabelsalCostFromStartPoint(int point)
+        {
+            var currentPoint = this.GetMatrixField(point, null, null);
+            var startPoint = this.GetMatrixField(this.IndexPunktuStartowego, null, null);
+
+            var distance = GetDistance(startPoint.PosX, startPoint.PosY, currentPoint.PosX, currentPoint.PosY);
+
+            return distance;
+        }
+
         private bool PointIsWalkableAt(int neighborPosX, int neighborPosY)
         {
             if (this.PointIsInsideMatrix(neighborPosX, neighborPosY) &&
@@ -246,7 +372,7 @@ namespace algorithms
             }
         }
 
-        private MatrixField GetMatrixField(int? index, int? posX, int? posY)
+        public MatrixField GetMatrixField(int? index, int? posX, int? posY)
         {
             var result = new MatrixField();
 
@@ -267,29 +393,6 @@ namespace algorithms
             return result;
         }
 
-        public bool IsItemAsMatrixPoint(int indexPunktuStartowego)
-        {
-            var point = this.GetMatrixField(indexPunktuStartowego, null, null);
-
-            return this.PointIsInsideMatrix(point.PosX, point.PosY);
-        }
-
-        public void SelectVisitedPoint(int indexPunktu)
-        {
-            var point = this.GetMatrixField(indexPunktu, null, null);
-
-            point.State = FieldState.Odwiedzony;
-        }
-
-        public void DisplayMatrixShortestPath(IEnumerable<int> shortestPathPoints)
-        {
-            foreach (var shortestPathPoint in shortestPathPoints)
-            {
-                var point = this.GetMatrixField(shortestPathPoint, null, null);
-                point.State = FieldState.ShortestPath;
-            }
-        }
-
         private static void ColoredConsoleWrite(ConsoleColor color, string text)
         {
             var originalColor = Console.BackgroundColor;
@@ -298,12 +401,34 @@ namespace algorithms
             Console.BackgroundColor = originalColor;
         }
 
-        public void SelectShortestPath(IEnumerable<int> shortestPath)
+        private static float GetDistance(double x1, double y1, double x2, double y2)
         {
-            foreach (var pointShort in shortestPath)
+            var result = Math.Sqrt(Math.Pow(x2 - x1, 2) + Math.Pow(y2 - y1, 2));
+
+            return (float)result;
+        }
+
+        public void CalculateF(List<MatrixField> neighboars)
+        {
+            this.CalculateG(neighboars);
+            this.CalculateH(neighboars);
+        }
+
+        private void CalculateG(List<MatrixField> neighboars)
+        {
+            foreach (var matrixField in neighboars)
             {
-                var point = this.GetMatrixField(pointShort, null, null);
-                point.State = FieldState.ShortestPath;
+                var cost = this.GetTrabelsalCostFromStartPoint(matrixField.Index);
+                matrixField.G = cost;
+            }
+        }
+
+        private void CalculateH(List<MatrixField> neighboars)
+        {
+            foreach (var matrixField in neighboars)
+            {
+                var cost = this.GetTrabelsalCostToEndPoint(matrixField.Index);
+                matrixField.H = cost;
             }
         }
     }

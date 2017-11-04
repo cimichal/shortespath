@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace algorithms
 {
@@ -12,6 +13,7 @@ namespace algorithms
 
             var executionBFS = new Stopwatch();
             var executionDFS = new Stopwatch();
+            var executionAstar = new Stopwatch();
 
             var executionBFS_SP = new Stopwatch();
             var executionDFS_SP = new Stopwatch();
@@ -22,14 +24,14 @@ namespace algorithms
             var obstacleGenerator = ObstacleGenerator.Instance;
             var wierzcholki = WygenerujWierzcholki(40);
             var indexStart = 1;
-            var indexStop = 277;
+            var indexStop = 200;
 
             var edges = new Dictionary<string, Tuple<int, int>>
             {
                 {"A", new Tuple<int, int>(19, 6)},
                 {"B", new Tuple<int, int>(18, 15)},
                 {"C", new Tuple<int, int>(8, 16)},
-                {"D", new Tuple<int, int>(8, 6)}
+                {"D", new Tuple<int, int>(8, 30)}
             };
 
             var squareIndex = obstacleGenerator.GenerateObstacle(ObstacleType.Square, ObstacleType.Close, edges);
@@ -47,8 +49,8 @@ namespace algorithms
 
             var matrix = new Matrix(wierzcholki)
             {
-                IsObstacleOnTheMatrix = false,
-                Obstacle = obstacleGenerator.GeneratedObstacles[squareIndex],
+                IsObstacleOnTheMatrix = true,
+                Obstacle = obstacleGenerator.GeneratedObstacles[lineIndex],
                 IndexPunktuKoncowego = indexStop,
                 IndexPunktuStartowego = indexStart
             };
@@ -105,12 +107,34 @@ namespace algorithms
 
             #endregion
 
+           
+            #region A*
+
+            matrix.GenerateEmptyMatrix();
+
+            var astra = new AStar()
+            {
+                Matrix = matrix
+            };
+
+            executionAstar.Start();
+            astra.FindPath();
+            executionAstar.Stop();
+
+            matrix.DisplayMatrix(false);
+
+            Console.WriteLine("A* shortest path: {0,2}", string.Join(", ", astra.SelectNodes.Select(i => i.Index)));
+            
+            #endregion
+
             #region Measurement
 
             Console.WriteLine("BFS: {0}, SP: {1}", executionBFS.ElapsedMilliseconds, executionBFS_SP.ElapsedMilliseconds);
             Console.WriteLine("DFS: {0}, SP: {1}", executionDFS.ElapsedMilliseconds, executionDFS_SP.ElapsedMilliseconds);
+            Console.WriteLine("A*: {0}, SP: {1}", executionAstar.ElapsedMilliseconds, executionAstar.ElapsedMilliseconds);
 
             #endregion
+
 
             Console.ReadLine();
         }

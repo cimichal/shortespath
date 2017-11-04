@@ -49,6 +49,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AStar.cs" />
     <Compile Include="Bfs.cs" />
     <Compile Include="DataStructureType.cs" />
     <Compile Include="Dfs.cs" />
