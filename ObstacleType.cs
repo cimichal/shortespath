@@ -6,6 +6,7 @@
         Close,
         Square,
         Traingle,
-        Line
+        Line,
+        SquareOpen
     }
 }

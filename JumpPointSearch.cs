@@ -1,38 +1,57 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace algorithms
 {
-    public class AStar
+    public class JumpPointSearch : AStar
     {
-        public Matrix Matrix { get; set; }
-        public List<MatrixField> SelectNodes { get; set; } = new List<MatrixField>();
+        public Stack<int> ListOfItemToCheck { get; set; } = new Stack<int>();
+        public List<int> ListOfVisitedItems { get; set; } = new List<int>();
 
-        public virtual List<MatrixField> FindPath()
+        public override List<MatrixField> FindPath()
         {
-                var searchPath = new List<MatrixField>();
+            var searchPath = new List<MatrixField>();
 
-                var searchPoint = this.Search(this.Matrix.IndexPunktuStartowego);
+            /*var searchPoint = this.Search(this.Matrix.IndexPunktuStartowego);
 
-                if (searchPoint)
+            if (searchPoint)
+            {
+                var point = this.Matrix.GetMatrixField(this.Matrix.IndexPunktuKoncowego, null, null);
+                while (point.ParentField != null)
                 {
-                    var point = this.Matrix.GetMatrixField(this.Matrix.IndexPunktuKoncowego, null, null);
-                    while (point.ParentField != null) // last element doesn't have parent
-                    {
-                        if (point.Index == 1)
-                        {
-                            var test = 1;
-                        }
-                        searchPath.Add(point);
-                        point = point.ParentField;
-                    }
-                    searchPath.Reverse();
+                    searchPath.Add(point);
+                    point = point.ParentField;
                 }
+                searchPath.Reverse();
+            }*/
 
-                return searchPath;
+            this.AddItemTCheckQueue(this.Matrix.IndexPunktuStartowego);
+            this.AddItemToVisitedList(this.Matrix.IndexPunktuStartowego);
+
+            while (this.ListOfItemToCheck.Count > 0)
+            {
+                var itemToCheck = this.ListOfItemToCheck.Pop();
+                var getNeighbors = this.Matrix.GetWalkableNeighbors(itemToCheck, false, true);
+            }
+
+            return searchPath;
         }
 
-        public virtual bool Search(int searchPoint)
+        private void AddItemTCheckQueue(int indexPunku)
+        {
+            this.ListOfItemToCheck.Push(indexPunku);
+        }
+
+        private void AddItemToVisitedList(int indexPunktu)
+        {
+            this.ListOfVisitedItems.Add(indexPunktu);
+            var point = this.Matrix.GetMatrixField(indexPunktu, null, null);
+            point.State = FieldState.Odwiedzony;
+            point.JmpState = FieldState.JMP;
+        }
+
+        public override bool Search(int searchPoint)
         {
             var neighboarsId = this.Matrix.GetWalkableNeighbors(searchPoint, true).Select(x => x.Index);
 

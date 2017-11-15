@@ -7,7 +7,7 @@ namespace algorithms
 {
     internal class Program
     {
-        private static void Main(string[] args)
+        private static void Main(string[] args)                                 
         {
             #region Diagnostics
 
@@ -20,18 +20,20 @@ namespace algorithms
 
             #endregion
 
-            #region Init
+            #region Init & Obsctacles
+
             var obstacleGenerator = ObstacleGenerator.Instance;
-            var wierzcholki = WygenerujWierzcholki(40);
+            var wierzcholki = WygenerujWierzcholki(20);
+
             var indexStart = 1;
-            var indexStop = 200;
+            var indexStop = 360;
 
             var edges = new Dictionary<string, Tuple<int, int>>
             {
                 {"A", new Tuple<int, int>(19, 6)},
-                {"B", new Tuple<int, int>(18, 15)},
+                {"B", new Tuple<int, int>(19, 16)},
                 {"C", new Tuple<int, int>(8, 16)},
-                {"D", new Tuple<int, int>(8, 30)}
+                {"D", new Tuple<int, int>(8, 6)}
             };
 
             var squareIndex = obstacleGenerator.GenerateObstacle(ObstacleType.Square, ObstacleType.Close, edges);
@@ -40,8 +42,10 @@ namespace algorithms
                 new Dictionary<string, Tuple<int, int>>
                 {
                     {"S", new Tuple<int, int>(1, 10)},
-                    {"ST", new Tuple<int, int>(12, 10)}
+                    {"ST", new Tuple<int, int>(30, 10)}
                 });
+
+            var openObstacle = obstacleGenerator.GenerateObstacle(ObstacleType.SquareOpen, ObstacleType.Open, edges);
 
             #endregion
 
@@ -49,8 +53,8 @@ namespace algorithms
 
             var matrix = new Matrix(wierzcholki)
             {
-                IsObstacleOnTheMatrix = true,
-                Obstacle = obstacleGenerator.GeneratedObstacles[lineIndex],
+                IsObstacleOnTheMatrix = false,
+                Obstacle = obstacleGenerator.GeneratedObstacles[openObstacle],
                 IndexPunktuKoncowego = indexStop,
                 IndexPunktuStartowego = indexStart
             };
@@ -76,7 +80,7 @@ namespace algorithms
             var shortestPathPointsBfs = bfs.NajkrotszaDroga().ToArray();
             executionBFS_SP.Stop();
 
-            Console.WriteLine("BFS shortest path: {0,2}", string.Join(", ", shortestPathPointsBfs));
+            //Console.WriteLine("BFS shortest path: {0,2}", string.Join(", ", shortestPathPointsBfs));
 
             matrix.DisplayMatrixShortestPath(shortestPathPointsBfs);
             matrix.DisplayMatrix(false);
@@ -106,9 +110,10 @@ namespace algorithms
             matrix.DisplayMatrix(false);
 
             #endregion
-
-           
+            
             #region A*
+
+            Console.WriteLine("AFS");
 
             matrix.GenerateEmptyMatrix();
 
@@ -118,13 +123,52 @@ namespace algorithms
             };
 
             executionAstar.Start();
-            astra.FindPath();
+            var nodes = astra.FindPath();
             executionAstar.Stop();
 
             matrix.DisplayMatrix(false);
 
-            Console.WriteLine("A* shortest path: {0,2}", string.Join(", ", astra.SelectNodes.Select(i => i.Index)));
+            Console.WriteLine("A* shortest path: {0,2}", string.Join(", ", nodes.Select(i => i.Index)));
+
+            #endregion
+
+            #region Best search
+
+            Console.WriteLine("Best");
             
+            matrix.IsBestSearch = true;
+            matrix.GenerateEmptyMatrix();
+
+            var bestSearch = new AStar()
+            {
+                Matrix = matrix
+            };
+
+            bestSearch.FindPath();
+
+            matrix.DisplayMatrix(false);
+
+            #endregion
+
+            #region JumpoPointSearch
+
+            Console.WriteLine("Jump point search");
+
+            matrix.Obstacle = obstacleGenerator.GeneratedObstacles[squareIndex];
+            matrix.IsBestSearch = false;
+            matrix.IsObstacleOnTheMatrix = true;
+            matrix.GenerateEmptyMatrix();
+
+            JumpPointSearch jumpPointSearch = new JumpPointSearch()
+            {
+                Matrix = matrix,
+
+            };
+
+            jumpPointSearch.FindPath();
+
+            matrix.DisplayMatrix(false);
+
             #endregion
 
             #region Measurement
@@ -135,7 +179,7 @@ namespace algorithms
 
             #endregion
 
-
+            
             Console.ReadLine();
         }
 

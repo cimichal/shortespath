@@ -55,6 +55,7 @@
     <Compile Include="Dfs.cs" />
     <Compile Include="FieldState.cs" />
     <Compile Include="Graph.cs" />
+    <Compile Include="JumpPointSearch.cs" />
     <Compile Include="Matrix.cs" />
     <Compile Include="MatrixField.cs" />
     <Compile Include="Obstacle.cs" />

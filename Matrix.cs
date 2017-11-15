@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace algorithms
@@ -20,6 +21,7 @@ namespace algorithms
         public bool IsObstacleOnTheMatrix { get; set; }
         public int IndexPunktuStartowego { get; set; }
         public int IndexPunktuKoncowego { get; set; }
+        public bool IsBestSearch { get; set; }
 
         public void GenerateEmptyMatrix()
         {
@@ -37,7 +39,8 @@ namespace algorithms
                         PosX = wiersz,
                         PosY = kolumna,
                         State = FieldState.Nieodwiedzony,
-                        Walkable = FieldState.Odblokowany
+                        Walkable = FieldState.Odblokowany,
+                        IsBestAlgorithm = this.IsBestSearch
                     };
 
                     this.listaPowiazanWierzcholkow.Add(point);
@@ -128,6 +131,11 @@ namespace algorithms
                                         throw new ArgumentOutOfRangeException();
                                 }
                             }
+
+                            if (currentPoint.JmpState == FieldState.JMP)
+                            {
+                                ColoredConsoleWrite(ConsoleColor.DarkCyan, "J");
+                            }
                         }
                     }
                 }
@@ -209,46 +217,88 @@ namespace algorithms
             var walkableNeighbors = this.GetWalkableNeighbors(indexPunktu);
 
             this.InitGhForMatrixFields(walkableNeighbors);
-            
+
             foreach (var walkableNeighbor in walkableNeighbors)
             {
                 var walkableNeighborPoint = this.GetMatrixField(walkableNeighbor, null, null);
 
-                if (walkableNeighborPoint.State == FieldState.Odwiedzony)
-                {
-                    continue;
-                }
-
-                if (walkableNeighborPoint.Walkable == FieldState.Zablokowany)
+                if (walkableNeighborPoint.State == FieldState.Odwiedzony ||
+                    walkableNeighborPoint.Walkable == FieldState.Zablokowany)
                 {
                     continue;
                 }
 
                 if (indexPunktu == this.IndexPunktuStartowego)
                 {
-                    walkableNeighborPoint.ParentField = currentPoint;
                     walkableNodes.Add(walkableNeighborPoint);
+                    continue;
                 }
 
-                if (walkableNeighborPoint.State == FieldState.Odwiedzony)
+                var traversalCost = this.GetTrabelsalCostFromStartPoint(walkableNeighbor);
+                var tempG = currentPoint.G + traversalCost;
+                if (tempG >= walkableNeighborPoint.G)
                 {
                     walkableNeighborPoint.ParentField = currentPoint;
-                    walkableNeighborPoint.State = FieldState.Nieodwiedzony;
                     walkableNodes.Add(walkableNeighborPoint);
-                }
-                else
-                {
-                    var traversalCost = this.GetTravelsalCostFromParent(walkableNeighbor);
-                    var tempG = currentPoint.G + traversalCost;
-                    if (tempG < walkableNeighborPoint.G)
-                    {
-                        walkableNeighborPoint.ParentField = currentPoint;
-                        walkableNodes.Add(walkableNeighborPoint);
-                    }
                 }
             }
 
             return walkableNodes;
+        }
+
+        public MatrixField GetWalkableNeighbors(int indexPunktu, bool isAStartAlgorithm, bool isJPSAlgorithm)
+        {
+            var walkableNodes = new List<MatrixField>();
+            var result = new List<MatrixField>();
+            var currentPoint = this.GetMatrixField(indexPunktu, null, null);
+            var walkableNeighbors = this.GetWalkableNeighbors(indexPunktu);
+
+            walkableNeighbors.ForEach(item =>
+            {
+                walkableNodes.Add(this.GetMatrixField(item, null, null));
+            });
+
+            this.CalculateG(walkableNodes);
+
+            foreach (var walkableNeighbor in walkableNodes)
+            {
+                if (walkableNeighbor.State == FieldState.Odwiedzony ||
+                    walkableNeighbor.Walkable == FieldState.Zablokowany)
+                {
+                    continue;
+                }
+
+                if (walkableNeighbor.Index == this.IndexPunktuStartowego)
+                {
+                    continue;
+                }
+
+                // only right is avaliable
+                if (walkableNeighbor.Index == this.IndexOfPosition(currentPoint.PosX, currentPoint.PosY+1)) // right
+                {
+                    result.Add(walkableNeighbor);
+                }
+
+                continue;
+            }
+
+            var firstOrDefault = result.FirstOrDefault();
+            if (firstOrDefault != null)
+            {
+                firstOrDefault.JmpState = FieldState.JMP; // jump
+            }
+            return result.FirstOrDefault();
+        }
+
+        private int IndexOfPosition(int pos_X, int pos_Y)
+        {
+            if (pos_X == 0 || pos_Y == 0 || pos_X >= this.wierzcholki.Length || pos_Y >= this.wierzcholki.Length)
+            {
+                return 0;
+            }
+
+            var point = this.GetMatrixField(null, pos_X, pos_Y);
+            return point.Index;
         }
 
         public bool IsItemAsMatrixPoint(int indexPunktuStartowego)
@@ -291,21 +341,6 @@ namespace algorithms
                 point.G = this.GetTrabelsalCostFromStartPoint(point.Index);
                 point.H = this.GetTrabelsalCostToEndPoint(point.Index);
             }
-        }
-
-        private double GetTravelsalCostFromParent(int walkableNeighbor)
-        {
-            var currentPoint = this.GetMatrixField(walkableNeighbor, null, null);
-            var parentPoint = this.GetMatrixField(currentPoint.ParentField.Index, null, null);
-
-            if (walkableNeighbor == this.IndexPunktuStartowego)
-            {
-                return 0;
-            }
-
-            var distance = GetDistance(currentPoint.PosX, parentPoint.PosX, currentPoint.PosY, parentPoint.PosY);
-
-            return distance;
         }
 
         private float GetTrabelsalCostToEndPoint(int point)

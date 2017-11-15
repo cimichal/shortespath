@@ -6,6 +6,7 @@
         Odwiedzony,
         Zablokowany,
         Odblokowany,
-        ShortestPath
+        ShortestPath,
+        JMP
     }
 }
