@@ -7,6 +7,7 @@
         Square,
         Traingle,
         Line,
-        SquareOpen
+        SquareOpen,
+        Labirynt
     }
 }

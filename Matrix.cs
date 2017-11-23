@@ -8,7 +8,7 @@ namespace algorithms
     public class Matrix
     {
         private readonly List<MatrixField> listaPowiazanWierzcholkow;
-        private readonly int[] wierzcholki;
+        public readonly int[] wierzcholki;
 
         public Matrix(int[] wierzcholki)
         {

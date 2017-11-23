@@ -9,24 +9,11 @@ namespace algorithms
     {
         private static void Main(string[] args)                                 
         {
-            #region Diagnostics
-
-            var executionBFS = new Stopwatch();
-            var executionDFS = new Stopwatch();
-            var executionAstar = new Stopwatch();
-
-            var executionBFS_SP = new Stopwatch();
-            var executionDFS_SP = new Stopwatch();
-
-            #endregion
-
-            #region Init & Obsctacles
-
             var obstacleGenerator = ObstacleGenerator.Instance;
             var wierzcholki = WygenerujWierzcholki(20);
 
-            var indexStart = 1;
-            var indexStop = 360;
+            var indexStart = 21;
+            var indexStop = 377;
 
             var edges = new Dictionary<string, Tuple<int, int>>
             {
@@ -36,30 +23,100 @@ namespace algorithms
                 {"D", new Tuple<int, int>(8, 6)}
             };
 
+            /* Obstacles */
+            var labirynt = new int[20, 20]
+            {
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {1,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
+                {0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
+                {0,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0},
+                {0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0},
+                {0,1,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0},
+                {0,1,1,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0},
+                {0,0,1,0,0,0,0,1,1,1,1,1,1,0,0,1,0,0,0,0},
+                {0,0,1,0,1,1,0,1,0,0,0,0,1,0,0,1,0,0,0,0},
+                {0,0,1,0,1,0,0,1,0,1,0,0,1,0,0,1,0,0,0,0},
+                {0,0,1,1,1,1,1,1,0,1,0,0,1,0,0,1,0,0,0,0},
+                {0,0,0,0,0,0,1,0,0,1,1,1,1,0,0,1,0,0,0,0},
+                {0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,1,0,0,0,0},
+                {0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,1,0,0,0,0},
+                {0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0},
+                {0,0,1,1,1,1,1,0,0,0,1,0,0,0,0,1,0,0,0,0},
+                {0,0,1,0,0,0,1,0,0,0,1,0,1,0,0,1,1,1,0,0},
+                {0,0,1,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0},
+                {0,0,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            };
+
+            var labiryntIndex = obstacleGenerator.GenerateObstacle(ObstacleType.Labirynt, ObstacleType.Open, labirynt);
+
             var squareIndex = obstacleGenerator.GenerateObstacle(ObstacleType.Square, ObstacleType.Close, edges);
 
             var lineIndex = obstacleGenerator.GenerateObstacle(ObstacleType.Line, ObstacleType.Open,
                 new Dictionary<string, Tuple<int, int>>
                 {
-                    {"S", new Tuple<int, int>(1, 10)},
-                    {"ST", new Tuple<int, int>(30, 10)}
+                    {"S1", new Tuple<int, int>(1, 10)},
+                    {"ST1", new Tuple<int, int>(19, 10)}
+                });
+
+            var threeLineIndex = obstacleGenerator.GenerateObstacle(ObstacleType.Traingle, ObstacleType.Open,
+                new Dictionary<string, Tuple<int, int>>
+                {
+                    {"S1", new Tuple<int, int>(1, 10)},
+                    {"ST1", new Tuple<int, int>(16, 10)},
+                    {"S2", new Tuple<int, int>(1, 12)},
+                    {"ST2", new Tuple<int, int>(15, 12)},
+                    {"S3", new Tuple<int, int>(1, 5)},
+                    {"ST3", new Tuple<int, int>(19, 5)}
                 });
 
             var openObstacle = obstacleGenerator.GenerateObstacle(ObstacleType.SquareOpen, ObstacleType.Open, edges);
+            /* End obstacles */
 
-            #endregion
-
-            #region Matrix
-
-            var matrix = new Matrix(wierzcholki)
+            var emptyMatrix = new Matrix(wierzcholki)
             {
                 IsObstacleOnTheMatrix = false,
-                Obstacle = obstacleGenerator.GeneratedObstacles[openObstacle],
                 IndexPunktuKoncowego = indexStop,
                 IndexPunktuStartowego = indexStart
             };
+            ExecuteAlgorithms(emptyMatrix, indexStart, indexStop);
 
+            foreach (var obstacle in obstacleGenerator.GeneratedObstacles)
+            {
+                Console.WriteLine("Obstacle");
+
+                var matrix = new Matrix(wierzcholki)
+                {
+                    IsObstacleOnTheMatrix = true,
+                    Obstacle = obstacleGenerator.GeneratedObstacles[obstacle.Key],
+                    IndexPunktuKoncowego = indexStop,
+                    IndexPunktuStartowego = indexStart
+                };
+                ExecuteAlgorithms(matrix, indexStart, indexStop);
+
+                Console.WriteLine();
+                Console.WriteLine();
+            }
+            
+
+            
+            Console.ReadLine();
+        }
+
+        public static void ExecuteAlgorithms(Matrix matrix, int indexStart, int indexStop)
+        {
             matrix.GenerateEmptyMatrix();
+
+
+            #region Diagnostics
+
+            var executionBFS = new Stopwatch();
+            var executionDFS = new Stopwatch();
+            var executionAstar = new Stopwatch();
+            var executionBest = new Stopwatch();
+
+            var executionBFS_SP = new Stopwatch();
+            var executionDFS_SP = new Stopwatch();
 
             #endregion
 
@@ -110,7 +167,7 @@ namespace algorithms
             matrix.DisplayMatrix(false);
 
             #endregion
-            
+
             #region A*
 
             Console.WriteLine("AFS");
@@ -128,14 +185,14 @@ namespace algorithms
 
             matrix.DisplayMatrix(false);
 
-            Console.WriteLine("A* shortest path: {0,2}", string.Join(", ", nodes.Select(i => i.Index)));
+            //Console.WriteLine("A* shortest path: {0,2}", string.Join(", ", nodes.Select(i => i.Index)));
 
             #endregion
 
             #region Best search
 
             Console.WriteLine("Best");
-            
+
             matrix.IsBestSearch = true;
             matrix.GenerateEmptyMatrix();
 
@@ -144,28 +201,9 @@ namespace algorithms
                 Matrix = matrix
             };
 
+            executionBest.Start();
             bestSearch.FindPath();
-
-            matrix.DisplayMatrix(false);
-
-            #endregion
-
-            #region JumpoPointSearch
-
-            Console.WriteLine("Jump point search");
-
-            matrix.Obstacle = obstacleGenerator.GeneratedObstacles[squareIndex];
-            matrix.IsBestSearch = false;
-            matrix.IsObstacleOnTheMatrix = true;
-            matrix.GenerateEmptyMatrix();
-
-            JumpPointSearch jumpPointSearch = new JumpPointSearch()
-            {
-                Matrix = matrix,
-
-            };
-
-            jumpPointSearch.FindPath();
+            executionBest.Stop();
 
             matrix.DisplayMatrix(false);
 
@@ -173,16 +211,18 @@ namespace algorithms
 
             #region Measurement
 
-            Console.WriteLine("BFS: {0}, SP: {1}", executionBFS.ElapsedMilliseconds, executionBFS_SP.ElapsedMilliseconds);
-            Console.WriteLine("DFS: {0}, SP: {1}", executionDFS.ElapsedMilliseconds, executionDFS_SP.ElapsedMilliseconds);
-            Console.WriteLine("A*: {0}, SP: {1}", executionAstar.ElapsedMilliseconds, executionAstar.ElapsedMilliseconds);
+            Console.WriteLine("BFS: {0}, SP: {1}", executionBFS.ElapsedMilliseconds,
+                executionBFS_SP.ElapsedMilliseconds);
+            Console.WriteLine("DFS: {0}, SP: {1}", executionDFS.ElapsedMilliseconds,
+                executionDFS_SP.ElapsedMilliseconds);
+            Console.WriteLine("A*: {0}, SP: {1}", executionAstar.ElapsedMilliseconds,
+                executionAstar.ElapsedMilliseconds);
+            Console.WriteLine("Best: {0}, SP: {1}", executionBest.ElapsedMilliseconds,
+                executionBest.ElapsedMilliseconds);
 
             #endregion
 
-            
-            Console.ReadLine();
         }
-
         private static int[] WygenerujWierzcholki(int liczbaWierzcholkow)
         {
             var table = new int[liczbaWierzcholkow];

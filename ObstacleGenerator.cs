@@ -44,12 +44,20 @@ namespace algorithms
                     return indexOfNewItem;
 
                 case ObstacleType.Traingle:
-                    break;
+                    var threeLine = new Obstacle
+                    {
+                        Points = this.GenerateLine(edges, 3),
+                        ObstacleType = ObstacleType.Traingle,
+                        IsObstacleOpen = isOpenObstacle
+                    };
+
+                    this.GeneratedObstacles.Add(indexOfNewItem, threeLine);
+                    return indexOfNewItem;
 
                 case ObstacleType.Line:
                     var newLine = new Obstacle
                     {
-                        Points = this.GenerateLine(edges),
+                        Points = this.GenerateLine(edges, 1),
                         ObstacleType = ObstacleType.Line,
                         IsObstacleOpen = isOpenObstacle
                     };
@@ -71,6 +79,40 @@ namespace algorithms
                 default:
                     break;
             }
+
+            return indexOfNewItem;
+        }
+
+        public int GenerateObstacle(ObstacleType labiryntType, ObstacleType open, int[,] labirynt)
+        {
+            var lastIndexInDictionary = this.GeneratedObstacles.Count.Equals(0)
+                ? 0
+                : this.GeneratedObstacles.Last().Key;
+            var indexOfNewItem = lastIndexInDictionary + 1;
+
+            var points = new List<Tuple<int, int>>();
+            
+            var obstacle = new Obstacle()
+            {
+                IsObstacleOpen = ObstacleType.Open,
+                ObstacleType = ObstacleType.Labirynt
+            };
+
+            for (int wierszIndex = 0; wierszIndex < 20; wierszIndex++)
+            {
+                for (int kolumnaIndex = 0; kolumnaIndex < 20; kolumnaIndex++)
+                {
+                    // Przeszkoda
+                    if (labirynt[wierszIndex, kolumnaIndex] == 0)
+                    {
+                        points.Add(new Tuple<int, int>(wierszIndex+1, kolumnaIndex+1));
+                    }
+                }
+            }
+
+            obstacle.Points = points;
+
+            this.GeneratedObstacles.Add(indexOfNewItem, obstacle);
 
             return indexOfNewItem;
         }
@@ -114,7 +156,7 @@ namespace algorithms
             return points;
         }
 
-        private IEnumerable<Tuple<int, int>> GenerateLine(Dictionary<string, Tuple<int, int>> edges)
+        private IEnumerable<Tuple<int, int>> GenerateLine(Dictionary<string, Tuple<int, int>> edges, int numberOfLine)
         {
             if (edges == null)
             {
@@ -123,22 +165,25 @@ namespace algorithms
 
             var points = new List<Tuple<int, int>>();
 
-            if (edges != null && edges["S"].Item1 == edges["ST"].Item1) // horizontally y
+            for (int lineIndex = 1; lineIndex <= numberOfLine; lineIndex++)
             {
-                for (var i = edges["S"].Item2; i <= edges["ST"].Item2; i++)
+                if (edges != null && edges[$"S{lineIndex}"].Item1 == edges[$"ST{lineIndex}"].Item1) // horizontally y
                 {
-                    points.Add(new Tuple<int, int>(edges["S"].Item1, i));
+                    for (var i = edges[$"S{lineIndex}"].Item2; i <= edges[$"ST{lineIndex}"].Item2; i++)
+                    {
+                        points.Add(new Tuple<int, int>(edges[$"S{lineIndex}"].Item1, i));
+                    }
+                }
+
+                if (edges != null && edges[$"S{lineIndex}"].Item2 == edges[$"ST{lineIndex}"].Item2) // vertically x
+                {
+                    for (var i = edges[$"S{lineIndex}"].Item1; i < edges[$"ST{lineIndex}"].Item1; i++)
+                    {
+                        points.Add(new Tuple<int, int>(i, edges[$"S{lineIndex}"].Item2));
+                    }
                 }
             }
-
-            if (edges != null && edges["S"].Item2 == edges["ST"].Item2) // vertically x
-            {
-                for (var i = edges["S"].Item1; i < edges["ST"].Item1; i++)
-                {
-                    points.Add(new Tuple<int, int>(i, edges["S"].Item2));
-                }
-            }
-
+            
             return points;
         }
     }

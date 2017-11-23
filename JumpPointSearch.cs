@@ -6,90 +6,105 @@ namespace algorithms
 {
     public class JumpPointSearch : AStar
     {
-        public Stack<int> ListOfItemToCheck { get; set; } = new Stack<int>();
-        public List<int> ListOfVisitedItems { get; set; } = new List<int>();
+        public List<MatrixField> SelectNodes { get; set; } = new List<MatrixField>();
+        public List<MatrixField> TmpNodes { get; set; } = new List<MatrixField>();
 
         public override List<MatrixField> FindPath()
         {
             var searchPath = new List<MatrixField>();
 
-            /*var searchPoint = this.Search(this.Matrix.IndexPunktuStartowego);
+            var searchPoint = this.Search(this.Matrix.IndexPunktuStartowego);
 
             if (searchPoint)
             {
                 var point = this.Matrix.GetMatrixField(this.Matrix.IndexPunktuKoncowego, null, null);
-                while (point.ParentField != null)
+                while (point.ParentField != null) // last element doesn't have parent
                 {
                     searchPath.Add(point);
                     point = point.ParentField;
                 }
                 searchPath.Reverse();
-            }*/
-
-            this.AddItemTCheckQueue(this.Matrix.IndexPunktuStartowego);
-            this.AddItemToVisitedList(this.Matrix.IndexPunktuStartowego);
-
-            while (this.ListOfItemToCheck.Count > 0)
-            {
-                var itemToCheck = this.ListOfItemToCheck.Pop();
-                var getNeighbors = this.Matrix.GetWalkableNeighbors(itemToCheck, false, true);
             }
 
             return searchPath;
-        }
-
-        private void AddItemTCheckQueue(int indexPunku)
-        {
-            this.ListOfItemToCheck.Push(indexPunku);
-        }
-
-        private void AddItemToVisitedList(int indexPunktu)
-        {
-            this.ListOfVisitedItems.Add(indexPunktu);
-            var point = this.Matrix.GetMatrixField(indexPunktu, null, null);
-            point.State = FieldState.Odwiedzony;
-            point.JmpState = FieldState.JMP;
+            
         }
 
         public override bool Search(int searchPoint)
         {
-            var neighboarsId = this.Matrix.GetWalkableNeighbors(searchPoint, true).Select(x => x.Index);
+            var currentPoint = this.Matrix.GetMatrixField(searchPoint, null, null);
+            
+            var neighboarsId = this.Matrix.GetWalkableNeighbors(searchPoint);
 
             var neighboars = new List<MatrixField>();
-
+            
             foreach (var i in neighboarsId)
             {
                 var neighboar = this.Matrix.GetMatrixField(i, null, null);
 
-                if (searchPoint == this.Matrix.IndexPunktuStartowego)
-                {
-                    this.SelectNodes.Add(this.Matrix.GetMatrixField(searchPoint, null, null));
-                }
-
-                if (!this.SelectNodes.Contains(neighboar))
-                {
-                    neighboars.Add(neighboar);
-                }
+                neighboars.Add(neighboar);
+                
             }
 
-            this.Matrix.CalculateF(neighboars);
+            // tylko raz sprawszamy pierwszy nody startowy 
+            if (currentPoint.Index == this.Matrix.IndexPunktuStartowego)
+            {
+                this.SelectNodes.Add(this.Matrix.GetMatrixField(this.Matrix.IndexPunktuStartowego, null, null));
+                foreach (var item in neighboars)
+                {
+                    item.ParentField = currentPoint;
+                    this.TmpNodes.Add(item);
+                }
 
-            // smallest F is first 
-            neighboars.Sort((node1, node2) => node1.F.CompareTo(node2.F));
+                this.Search(this.TmpNodes.FirstOrDefault().Index); // go line
+            }
 
-            foreach (var nextNode in neighboars)
+            // sparwawdzenie czy ide prosto czy przekatna 
+
+            if (currentPoint.ParentField.PosX == currentPoint.PosX &&
+                currentPoint.ParentField.PosY == currentPoint.PosY - 1) // line
+            {
+                var rightNode = this.Matrix.GetMatrixField(null, currentPoint.PosX, currentPoint.PosY + 1);
+
+                if (rightNode.PosX <= this.Matrix.wierzcholki.Length &&
+                    rightNode.PosY <= this.Matrix.wierzcholki.Length)
+                {
+                    rightNode.ParentField = currentPoint;
+                    this.SelectNodes.Add(rightNode);
+                    this.Search(rightNode.Index);
+                }
+
+            }
+
+            if (currentPoint.ParentField.PosX == currentPoint.PosX - 1 || // diagonal
+                currentPoint.ParentField.PosY == currentPoint.PosY - 1)
+            {
+                var rightDiagonalNode = this.Matrix.GetMatrixField(null, currentPoint.PosX, currentPoint.PosY + 1);
+                this.SelectNodes.Add(rightDiagonalNode);
+            }
+
+            /*foreach (var nextNode in neighboars)
             {
                 if (nextNode.Index == this.Matrix.IndexPunktuKoncowego)
                 {
+                    // koniec przeszukiwania petli
                     this.SelectNodes.Add(nextNode);
                     nextNode.State = FieldState.Odwiedzony;
                     return true;
                 }
-
-                if (nextNode.State == FieldState.Odwiedzony)
+                if (nextNode.Index == this.Matrix.IndexPunktuStartowego)
+                {
+                    this.SelectNodes.Add(nextNode);
+                    nextNode.State = FieldState.Odwiedzony;
+                    continue;
+                }
+                // nody odwiedzone sa do ignorowania
+                if (this.SelectNodes.Contains(nextNode))
                 {
                     continue;
                 }
+
+                
 
                 this.SelectNodes.Add(nextNode);
                 nextNode.State = FieldState.Odwiedzony;
@@ -98,8 +113,10 @@ namespace algorithms
                 {
                     return true;
                 }
-            }
+            }*/
+
             return false;
+            
         }
     }
 }
