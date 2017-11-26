@@ -10,6 +10,7 @@ namespace algorithms
         public Dictionary<string, Tuple<int, int>> Edges { get; set; }
         public IEnumerable<Tuple<int, int>> Points { get; set; }
         public ObstacleType IsObstacleOpen { get; set; }
+        public string ObstacleDescription { get; set; }
 
         public bool CheckIfPointIsInsideObstacle(int posX, int posY)
         {

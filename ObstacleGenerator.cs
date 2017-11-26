@@ -17,7 +17,7 @@ namespace algorithms
         public Dictionary<int, Obstacle> GeneratedObstacles { get; set; } = new Dictionary<int, Obstacle>();
 
         public int GenerateObstacle(ObstacleType obstacleType, ObstacleType isOpenObstacle,
-            Dictionary<string, Tuple<int, int>> edges)
+            Dictionary<string, Tuple<int, int>> edges, string description)
         {
             var lastIndexInDictionary = this.GeneratedObstacles.Count.Equals(0)
                 ? 0
@@ -37,7 +37,8 @@ namespace algorithms
                     {
                         Edges = edges,
                         IsObstacleOpen = isOpenObstacle,
-                        ObstacleType = ObstacleType.Square
+                        ObstacleType = ObstacleType.Square,
+                        ObstacleDescription = description
                     };
 
                     this.GeneratedObstacles.Add(indexOfNewItem, newSquare);
@@ -48,7 +49,8 @@ namespace algorithms
                     {
                         Points = this.GenerateLine(edges, 3),
                         ObstacleType = ObstacleType.Traingle,
-                        IsObstacleOpen = isOpenObstacle
+                        IsObstacleOpen = isOpenObstacle,
+                        ObstacleDescription = description
                     };
 
                     this.GeneratedObstacles.Add(indexOfNewItem, threeLine);
@@ -59,7 +61,8 @@ namespace algorithms
                     {
                         Points = this.GenerateLine(edges, 1),
                         ObstacleType = ObstacleType.Line,
-                        IsObstacleOpen = isOpenObstacle
+                        IsObstacleOpen = isOpenObstacle,
+                        ObstacleDescription = description
                     };
 
                     this.GeneratedObstacles.Add(indexOfNewItem, newLine);
@@ -70,7 +73,8 @@ namespace algorithms
                     {
                         Points = this.GenerateOpenSquare(edges),
                         IsObstacleOpen = isOpenObstacle,
-                        ObstacleType = ObstacleType.SquareOpen
+                        ObstacleType = ObstacleType.SquareOpen,
+                        ObstacleDescription = description
                     };
 
                     this.GeneratedObstacles.Add(indexOfNewItem, newSquareOpen);
@@ -83,7 +87,7 @@ namespace algorithms
             return indexOfNewItem;
         }
 
-        public int GenerateObstacle(ObstacleType labiryntType, ObstacleType open, int[,] labirynt)
+        public int GenerateObstacle(ObstacleType labiryntType, ObstacleType open, int[,] labirynt, string description)
         {
             var lastIndexInDictionary = this.GeneratedObstacles.Count.Equals(0)
                 ? 0
@@ -95,7 +99,8 @@ namespace algorithms
             var obstacle = new Obstacle()
             {
                 IsObstacleOpen = ObstacleType.Open,
-                ObstacleType = ObstacleType.Labirynt
+                ObstacleType = ObstacleType.Labirynt,
+                ObstacleDescription = description
             };
 
             for (int wierszIndex = 0; wierszIndex < 20; wierszIndex++)
