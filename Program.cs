@@ -46,46 +46,45 @@ namespace algorithms
                         break;
 
                     case ConsoleKey.S:
+                        Console.Clear();
                         ExecuteSpecificAlgortihm(obstacles["S"]);
                         break;
 
                     case ConsoleKey.D:
-                        ExecuteSpecificAlgortihm(obstacles["S"]);
+                        Console.Clear();
+                        ExecuteSpecificAlgortihm(obstacles["D"]);
                         break;
 
                     case ConsoleKey.F:
-                        ExecuteSpecificAlgortihm(obstacles["S"]);
+                        Console.Clear();
+                        ExecuteSpecificAlgortihm(obstacles["F"]);
                         break;
 
                     case ConsoleKey.G:
-                        ExecuteSpecificAlgortihm(obstacles["S"]);
+                        Console.Clear();
+                        ExecuteSpecificAlgortihm(obstacles["G"]);
                         break;
 
                     case ConsoleKey.H:
-                        ExecuteSpecificAlgortihm(obstacles["S"]);
+                        Console.Clear();
+                        ExecuteSpecificAlgortihm(obstacles["H"]);
                         break;
 
                     case ConsoleKey.M:
                         ProgramDescription("desc");
                         ProgramDescription("selectOption");
                         break;
-
+                        
                     default:
                         ProgramDescription("desc");
+                        ProgramDescription("selectOption");
                         break;
                 }
 
                 Console.WriteLine("W celu powortu do wyboru planszy uzyj : M");
                 key = Console.ReadKey();
             }
-
-            /*Koniec petli glownej*/
-
-            foreach (var obstacle in ObstacleGenerator.GeneratedObstacles)
-            {
-            }
-
-            Console.ReadLine();
+            
         }
 
         private static void ExecuteSpecificAlgortihm(int obstacleIndex)
